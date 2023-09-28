@@ -41,6 +41,7 @@ const searchByName = async (name) => {
       element.name.toLowerCase().includes(name.toLowerCase())
     );
   });
+  console.log(productList);
   return filterByName;
 };
 module.exports = {
