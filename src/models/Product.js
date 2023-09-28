@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
         type: DataTypes.INTEGER,
         autoincrement: true ,
         primaryKey: true,
-        allowNull: false,
+        
       },
 
       name: {
@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
         allowNull: true,
       },
 
-      countrie: {
+      country: {
         type: DataTypes.STRING,
         allowNull: false,
       },
