@@ -6,10 +6,10 @@ module.exports = (sequelize) => {
     "Product",
     {
       id: {
-        type: DataTypes.INTEGER,
-        autoincrement: true ,
+        type: DataTypes.UUID,
+        defaultValue:DataTypes.UUIDV4,
         primaryKey: true,
-        allowNull: false,
+        
       },
 
       name: {
