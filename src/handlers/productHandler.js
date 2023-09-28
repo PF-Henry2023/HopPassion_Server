@@ -6,12 +6,7 @@ const {
 const { Product } = require("../db");
 
 const createProduct = async (req, res) => {
-  /*  try {
-    const response = await createProd();
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  } */
+
   res.send("esta ruta es para crear producto");
 };
 const allProducts = async (req, res) => {
