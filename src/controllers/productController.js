@@ -1,11 +1,30 @@
 const { Product } = require("../db");
 
-const createRev = async () => {
-  try {
-    return "createProduct";
-  } catch (error) {
-    throw new Error(`Error creating Product:${error.message}`);
-  }
+const createProd = async ({
+  name,
+  image,
+  description,
+  country,
+  price,
+  stock,
+  amountMl,
+  alcoholContent,
+}) => {
+  const createNewProd = await Product.create({
+    where: { name: name },
+    defaults: {
+      name,
+      image,
+      description,
+      country,
+      price,
+      stock,
+      amountMl,
+      alcoholContent,
+    },
+  });
+  console.log(createNewProd);
+  return createNewProd;
 };
 
 const allProdu = async () => {
@@ -26,7 +45,7 @@ const searchByName = async (name) => {
   return filterByName;
 };
 module.exports = {
-  createRev,
+  createProd,
   allProdu,
   searchByName,
 };
