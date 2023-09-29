@@ -35,12 +35,13 @@ const orderingProducts = async (info) => {
       case "priceASC":
         orderedProducts = await Product.findAll({
           order: [["price", "ASC"]]
-        })
+        });
         break;
       case "priceDESC":
         orderedProducts = await Product.findAll({
           order: [["price", "DESC"]]
-        })
+        });
+        break;
       default:
         break;
     }

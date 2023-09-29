@@ -11,30 +11,41 @@ const createProd = async ({
   amountMl,
   alcoholContent,
 }) => {
-  const categorie = await Categorie.findOne({
-    where: {
-      name: category
-    }
-  })
-  if(!categorie){
-    throw new Error("Categoria no encontrada");
-  } else {
-    const createNewProd = await Product.findOrCreate({
-      where: { name: name },
-      defaults: {
-        name,
-        image,
-        description,
-        country,
-        price,
-        stock,
-        amountMl,
-        alcoholContent,
-      },
+  try {
+    // Busca la categoría por nombre
+    const categorie = await Categorie.findOne({
+      where: {
+        name: category
+      }
     });
-    await createNewProd.addCategories(categorie);
-    console.log("Producto relacionado con exito");
-    return createNewProd;
+
+    if (!categorie) {
+      throw new Error("Categoria no encontrada");
+    } else {
+      const [createNewProd, created] = await Product.findOrCreate({
+        where: { name: name },
+        defaults: {
+          name,
+          image,
+          description,
+          country,
+          price,
+          stock,
+          amountMl,
+          alcoholContent,
+        },
+      });
+      await createNewProd.addCategories(categorie);
+      if (created) {
+        console.log("Producto creado con éxito");
+      } else {
+        console.log("Producto encontrado existente y relacionado con éxito");
+      }
+      return createNewProd;
+    }
+  } catch (error) {
+    console.error("Error al crear o relacionar el producto:", error.message);
+    throw error;
   }
 };
 
