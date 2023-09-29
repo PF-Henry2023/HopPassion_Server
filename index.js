@@ -8,4 +8,4 @@ conn.sync({ force: false }).then(() => {
   server.listen(PORT, () => {
     console.log(`server raise in port :${PORT}`);
   });
-});
+}); 
