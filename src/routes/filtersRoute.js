@@ -1,7 +1,8 @@
 const { Router } = require("express");  
-const { getCategorie } = require("../handlers/filtersHandler");
+const { getCountryOrigin, getOrderingProducts } = require("../handlers/filtersHandler");
 const filterRoute = Router();
 
-filterRoute.get("/categories", getCategorie);
+filterRoute.get("/countryOrigin", getCountryOrigin);
+filterRoute.get("/orderingProducts/:info", getOrderingProducts);
 
 module.exports = filterRoute;

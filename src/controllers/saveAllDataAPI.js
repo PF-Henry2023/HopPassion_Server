@@ -11,7 +11,7 @@ const saveAllData = async (data) => {
           name: beer.name,
           description: beer.description,
           image: beer.image,
-          countrie: beer.country,
+          country: beer.country,
           price: beer.price,
           alcoholContent: beer.alcoholContent,
           stock: beer.stock,

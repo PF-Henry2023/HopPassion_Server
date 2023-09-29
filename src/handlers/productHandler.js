@@ -11,6 +11,7 @@ const createProduct = async (req, res) => {
       name,
       image,
       description,
+      category,
       country,
       price,
       stock,
@@ -24,6 +25,7 @@ const createProduct = async (req, res) => {
       country,
       price,
       stock,
+      category,
       amountMl,
       alcoholContent,});
     res.status(200).json(response);

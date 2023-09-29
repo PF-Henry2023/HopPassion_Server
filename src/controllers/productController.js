@@ -1,30 +1,41 @@
-const { Product } = require("../db");
+const { Product, Categorie } = require("../db");
 
 const createProd = async ({
   name,
   image,
   description,
   country,
+  category,
   price,
   stock,
   amountMl,
   alcoholContent,
 }) => {
-  const createNewProd = await Product.create({
-    where: { name: name },
-    defaults: {
-      name,
-      image,
-      description,
-      country,
-      price,
-      stock,
-      amountMl,
-      alcoholContent,
-    },
-  });
-  console.log(createNewProd);
-  return createNewProd;
+  const categorie = await Categorie.findOne({
+    where: {
+      name: category
+    }
+  })
+  if(!categorie){
+    throw new Error("Categoria no encontrada");
+  } else {
+    const createNewProd = await Product.findOrCreate({
+      where: { name: name },
+      defaults: {
+        name,
+        image,
+        description,
+        country,
+        price,
+        stock,
+        amountMl,
+        alcoholContent,
+      },
+    });
+    await createNewProd.addCategories(categorie);
+    console.log("Producto relacionado con exito");
+    return createNewProd;
+  }
 };
 
 const allProdu = async () => {
