@@ -32,16 +32,24 @@ const createProd = async ({
         alcoholContent,
       },
     });
-    await createNewProd.addCategories(categorie);
+    await createNewProd.addCategorie(categorie);
     console.log("Producto relacionado con exito");
     return createNewProd;
   }
 };
 
 const allProdu = async () => {
-  const getAll = await Product.findAll();
+  const getAll = await Product.findAll({
+    include: {
+      model: Categorie,
+      attributes: ["name"],
+      through: { attributes: [] },
+      as: 'Categories' 
+    }
+  });
   return getAll;
 };
+
 
 const searchByName = async (name) => {
   const productList = await allProdu();
