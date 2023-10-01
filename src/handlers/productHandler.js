@@ -35,8 +35,8 @@ const createProduct = async (req, res) => {
 
 const allProducts = async (req, res) => {
   try {
-    const { query, country, order } = req.query;
-    const response = await searchProducts(query, country, order)
+    const { query, country, order, page } = req.query;
+    const response = await searchProducts(query, country, order, parseInt(page ?? 1, 10))
     return res.status(200).json(response);
   } catch(error) {
     res.status(400).json({ error: error.message });
