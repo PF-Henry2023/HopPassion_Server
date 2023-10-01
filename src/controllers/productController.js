@@ -36,17 +36,11 @@ const createProd = async ({
           alcoholContent,
         },
       });
-      await createNewProd.addCategories(categorie);
-      if (created) {
-        console.log("Producto creado con éxito");
-      } else {
-        console.log("Producto encontrado existente y relacionado con éxito");
-      }
+      await createNewProd.addCategorie(categorie);
       return createNewProd;
     }
-  } catch (error) {
-    console.error("Error al crear o relacionar el producto:", error.message);
-    throw error;
+  } catch(error) {
+    return error;
   }
 };
 
@@ -54,7 +48,13 @@ const searchProducts = async (query, country, order) => {
   try {
     const products = await Product.findAll({
       where: filterConfiguration(query, country),
-      order: orderingConfiguration(order) 
+      order: orderingConfiguration(order),
+      include: {
+        model: Categorie,
+        attributes: ["name"],
+        through: { attributes: [] },
+        as: 'Categories' 
+      } 
     });
     return {products:products};
   } catch(error) {
