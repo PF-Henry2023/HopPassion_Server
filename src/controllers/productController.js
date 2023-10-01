@@ -61,6 +61,22 @@ const searchProducts = async (query, country, order, page) => {
   }
 } 
 
+const getProductById = async (id) => {
+  try {
+      const product = await Product.findByPk(id, { 
+        include: {
+          model: Categorie,  
+          attributes: ["name"],
+          through: { attributes: [] },
+          as: 'Categories' 
+        } 
+      }); 
+      return product;
+    } catch(error) {
+      return error;
+    }
+}
+
 const filterConfiguration = (query, country) => {
   const filters = []
   if(query) {
@@ -95,5 +111,6 @@ const orderingConfiguration = (order) => {
 
 module.exports = {
   createProd,
-  searchProducts
+  searchProducts,
+  getProductById
 };
