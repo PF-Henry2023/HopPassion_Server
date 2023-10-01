@@ -2,7 +2,7 @@ const {
   createProd,
   searchProducts
 } = require("../controllers/productController");
-const { Product } = require("../db");
+const { Product,Categorie } = require("../db");
 
 const createProduct = async (req, res) => {
   try {
@@ -46,11 +46,13 @@ const allProducts = async (req, res) => {
 const product = async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await Product.findByPk(id);
+    const response = await Product.findByPk(id, { include: { model: Categorie,  attributes: ["name"],
+    through: { attributes: [] }, as: 'Categories' } });
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 module.exports = { createProduct, allProducts, product };
