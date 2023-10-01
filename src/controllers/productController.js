@@ -44,23 +44,38 @@ const createProd = async ({
   }
 };
 
-const searchProducts = async (query, country, order) => {
+const searchProducts = async (query, country, order, page) => {
+  const pageSize = 20; 
+  const offset = (page - 1) * pageSize;
   try {
     const products = await Product.findAll({
+      attributes: ['id', 'name', 'price', 'image'],
       where: filterConfiguration(query, country),
       order: orderingConfiguration(order),
-      include: {
-        model: Categorie,
-        attributes: ["name"],
-        through: { attributes: [] },
-        as: 'Categories' 
-      } 
+      limit: pageSize,
+      offset: offset
     });
-    return {products:products};
+    return { products: products, page: page };
   } catch(error) {
     return error;
   }
 } 
+
+const getProductById = async (id) => {
+  try {
+      const product = await Product.findByPk(id, { 
+        include: {
+          model: Categorie,  
+          attributes: ["name"],
+          through: { attributes: [] },
+          as: 'Categories' 
+        } 
+      }); 
+      return product;
+    } catch(error) {
+      return error;
+    }
+}
 
 const filterConfiguration = (query, country) => {
   const filters = []
@@ -96,5 +111,6 @@ const orderingConfiguration = (order) => {
 
 module.exports = {
   createProd,
-  searchProducts
+  searchProducts,
+  getProductById
 };
