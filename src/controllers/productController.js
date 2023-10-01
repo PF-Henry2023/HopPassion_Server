@@ -1,4 +1,5 @@
 const { Product, Categorie } = require("../db");
+const { Op } = require('sequelize');
 
 const createProd = async ({
   name,
@@ -49,25 +50,51 @@ const createProd = async ({
   }
 };
 
-const allProdu = async () => {
-  const getAll = await Product.findAll();
-  return getAll;
-};
+const searchProducts = async (query, country, order) => {
+  try {
+    const products = await Product.findAll({
+      where: filterConfiguration(query, country),
+      order: orderingConfiguration(order) 
+    });
+    return {products:products};
+  } catch(error) {
+    return error;
+  }
+} 
 
-const searchByName = async (name) => {
-  const productList = await allProdu();
-  const filterByName = productList.filter((element) => {
-    return (
-      element &&
-      element.name &&
-      element.name.toLowerCase().includes(name.toLowerCase())
-    );
-  });
-  console.log(productList);
-  return filterByName;
-};
+const filterConfiguration = (query, country) => {
+  const filters = []
+  if(query) {
+    filters.push({ name: { [Op.iLike]: `%${query}%` } })
+  }
+  if(country) {
+    filters.push({ country: { [Op.eq]: country } })
+  }
+  return {
+    [Op.and]: filters
+  };
+}
+
+const orderingConfiguration = (order) => {
+  switch (order) {
+    case "A_Z":
+      return [["name", "ASC"]];
+    case "Z_A":
+      return [["name", "DESC"]];
+    case "priceASC":
+      return [["price", "ASC"]];
+    case "priceDESC":
+      return [["price", "DESC"]];
+    case "alcoholASC":
+      return [["alcoholContent", "ASC"]];
+    case "alcoholDESC":
+      return [["alcoholContent", "DESC"]];
+    default:
+      return []
+  }
+}
+
 module.exports = {
   createProd,
-  allProdu,
-  searchByName,
+  searchProducts
 };

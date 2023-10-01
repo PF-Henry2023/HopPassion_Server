@@ -1,7 +1,6 @@
 const {
   createProd,
-  allProdu,
-  searchByName,
+  searchProducts
 } = require("../controllers/productController");
 const { Product } = require("../db");
 
@@ -33,15 +32,17 @@ const createProduct = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 const allProducts = async (req, res) => {
   try {
-    const { name } = req.query;
-    const response = name ? await searchByName(name) : await allProdu();
-    res.status(200).json(response);
-  } catch (error) {
+    const { query, country, order } = req.query;
+    const response = await searchProducts(query, country, order)
+    return res.status(200).json(response);
+  } catch(error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 const product = async (req, res) => {
   try {
     const { id } = req.params;
