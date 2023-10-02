@@ -12,10 +12,10 @@ const createUserHandler = async (req, res) => {
 }
 
 const  updateUserHandler = async (req, res) => {
+    const userId = req.params.id;
+    const updateUserData = req.body
     try {
-        const { id, name, lastName, address, email, phone, role, password } = req.body;
-        if(!id) throw Error("El id es obligatorio");
-        const response = await updateUser(id, name, lastName, address, email, phone, role, password);
+        const response = await updateUser(userId, updateUserData);
         res.status(200).json(response);
     } catch (error) {
         res.status(400).json({error: error.message});

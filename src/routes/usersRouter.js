@@ -4,6 +4,6 @@ const usersRouter = Router();
 const { createUserHandler, updateUserHandler } = require("../handlers/usersHandler");
 
 usersRouter.post("/signup", createUserHandler);
-usersRouter.put("/update", updateUserHandler);
+usersRouter.put("/update/:id", updateUserHandler);
 
 module.exports = usersRouter;
