@@ -1,10 +1,20 @@
 const { User } = require("../db");
 
-const createUser = async (name, lastName, address, email, phone, role, password) => {
+const createUser = async ({name, lastName, address, email, phone, role, password}) => {
 
-    const newUser = await User.create({name, lastName, address, email, phone, role, password});
-
-    return newUser;
+    const [user, created] = await User.findOrCreate({
+        where: { email },
+        defaults:{
+            name, 
+            lastName, 
+            address, 
+            email, 
+            phone, 
+            role, 
+            password
+        }});
+        if(!created) throw Error("User already exists");
+    return user;
 };
 
 const getUserById = async (id) => {

@@ -3,9 +3,10 @@ const { createUser, updateUser } = require("../controllers/usersController");
 const createUserHandler = async (req, res) => {
     const { name, lastName, address, email, phone, role, password } = req.body;
     try {
-        const response = await createUser(name, lastName, address, email, phone, role, password);
+        const response = await createUser({name, lastName, address, email, phone, role, password});
         res.status(201).json(response);
     } catch (error) {
+        console.log(error);
         res.status(400).json({error: error.message});
     }
 }
