@@ -39,7 +39,7 @@ module.exports = (sequelize) => {
                 defaultValue: "user",
             },
             password: {
-                type: DataTypes.STRING(5),
+                type: DataTypes.STRING,
                 allowNull: false,
             },
         },
