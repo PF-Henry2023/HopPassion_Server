@@ -1,5 +1,6 @@
 const { Product, Categorie } = require("../db");
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
+
 
 const createProd = async ({
   name,
@@ -44,18 +45,19 @@ const createProd = async ({
   }
 };
 
-const searchProducts = async (query, country, order, page) => {
+const searchProducts = async (query, country, order, category, page) => {
   const pageSize = 20; 
   const offset = (page - 1) * pageSize;
   try {
-    const products = await Product.findAll({
+    const result = await Product.findAndCountAll({
       attributes: ['id', 'name', 'price', 'image'],
       where: filterConfiguration(query, country),
       order: orderingConfiguration(order),
+      include: includeConfiguration(category),
       limit: pageSize,
       offset: offset
     });
-    return { products: products, page: page };
+    return { products: result.rows, page: { page, hasMore: ((offset + result.rows.length) < result.count)} };
   } catch(error) {
     return error;
   }
@@ -63,15 +65,20 @@ const searchProducts = async (query, country, order, page) => {
 
 const getProductById = async (id) => {
   try {
-      const product = await Product.findByPk(id, { 
+      const result = (await Product.findByPk(id, { 
         include: {
           model: Categorie,  
           attributes: ["name"],
           through: { attributes: [] },
           as: 'Categories' 
         } 
-      }); 
-      return product;
+      })).toJSON();
+      const product = {
+        ...result,
+        categories: result.Categories.map((category) => category.name)
+      }
+      delete product.Categories;
+      return product;  
     } catch(error) {
       return error;
     }
@@ -93,9 +100,9 @@ const filterConfiguration = (query, country) => {
 const orderingConfiguration = (order) => {
   switch (order) {
     case "A_Z":
-      return [["name", "ASC"]];
+      return [[Sequelize.fn('lower', Sequelize.col('name')), "ASC"]];
     case "Z_A":
-      return [["name", "DESC"]];
+      return [[Sequelize.fn('lower', Sequelize.col('name')), "DESC"]];
     case "priceASC":
       return [["price", "ASC"]];
     case "priceDESC":
@@ -107,6 +114,20 @@ const orderingConfiguration = (order) => {
     default:
       return []
   }
+}
+
+const includeConfiguration = (category) => {
+  const configuration = [];
+  if(category) {
+    configuration.push({ 
+      model: Categorie, 
+      as: "Categories",
+      attributes: [],
+      where: { id: category },
+      through: { attributes: [] }
+    })
+  }
+  return configuration;
 }
 
 module.exports = {
