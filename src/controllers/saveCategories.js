@@ -2,21 +2,24 @@ const { Categorie } = require("../db");
 
 const saveCategoriesDB = async (data) => {
   try {
-    for (const category of data) {
-      const newCategory = await Categorie.findOrCreate({
+    console.log(data);
+    for (const categoryObj of data) {
+      const categoryName = categoryObj.name;
+
+      await Categorie.findOrCreate({
         where: {
-          name: category
+          name: categoryName,
         },
         defaults: {
-          name: category
-        }
-      })
+          name: categoryName,
+        },
+      });
     }
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
 
 module.exports = {
-  saveCategoriesDB
-}
+  saveCategoriesDB,
+};

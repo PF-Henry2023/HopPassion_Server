@@ -1,6 +1,4 @@
 const { Product, Categorie } = require("../db");
-const { Op, Sequelize } = require('sequelize');
-
 
 const createProd = async ({
   name,
@@ -17,8 +15,8 @@ const createProd = async ({
     // Busca la categoría por nombre
     const categorie = await Categorie.findOne({
       where: {
-        name: category
-      }
+        name: category,
+      },
     });
 
     if (!categorie) {
@@ -37,101 +35,39 @@ const createProd = async ({
           alcoholContent,
         },
       });
-      await createNewProd.addCategorie(categorie);
+      await createNewProd.addCategories(categorie);
+      if (created) {
+        console.log("Producto creado con éxito");
+      } else {
+        console.log("Producto encontrado existente y relacionado con éxito");
+      }
       return createNewProd;
     }
-  } catch(error) {
-    return error;
+  } catch (error) {
+    console.error("Error al crear o relacionar el producto:", error.message);
+    throw error;
   }
 };
 
-const searchProducts = async (query, country, order, category, page) => {
-  const pageSize = 20; 
-  const offset = (page - 1) * pageSize;
-  try {
-    const result = await Product.findAndCountAll({
-      attributes: ['id', 'name', 'price', 'image'],
-      where: filterConfiguration(query, country),
-      order: orderingConfiguration(order),
-      include: includeConfiguration(category),
-      limit: pageSize,
-      offset: offset
-    });
-    return { products: result.rows, page: { page, hasMore: ((offset + result.rows.length) < result.count)} };
-  } catch(error) {
-    return error;
-  }
-} 
+const allProdu = async () => {
+  const getAll = await Product.findAll();
+  return getAll;
+};
 
-const getProductById = async (id) => {
-  try {
-      const result = (await Product.findByPk(id, { 
-        include: {
-          model: Categorie,  
-          attributes: ["name"],
-          through: { attributes: [] },
-          as: 'Categories' 
-        } 
-      })).toJSON();
-      const product = {
-        ...result,
-        categories: result.Categories.map((category) => category.name)
-      }
-      delete product.Categories;
-      return product;  
-    } catch(error) {
-      return error;
-    }
-}
-
-const filterConfiguration = (query, country) => {
-  const filters = []
-  if(query) {
-    filters.push({ name: { [Op.iLike]: `%${query}%` } })
-  }
-  if(country) {
-    filters.push({ country: { [Op.eq]: country } })
-  }
-  return {
-    [Op.and]: filters
-  };
-}
-
-const orderingConfiguration = (order) => {
-  switch (order) {
-    case "A_Z":
-      return [[Sequelize.fn('lower', Sequelize.col('name')), "ASC"]];
-    case "Z_A":
-      return [[Sequelize.fn('lower', Sequelize.col('name')), "DESC"]];
-    case "priceASC":
-      return [["price", "ASC"]];
-    case "priceDESC":
-      return [["price", "DESC"]];
-    case "alcoholASC":
-      return [["alcoholContent", "ASC"]];
-    case "alcoholDESC":
-      return [["alcoholContent", "DESC"]];
-    default:
-      return []
-  }
-}
-
-const includeConfiguration = (category) => {
-  const configuration = [];
-  if(category) {
-    configuration.push({ 
-      model: Categorie, 
-      as: "Categories",
-      attributes: [],
-      where: { id: category },
-      through: { attributes: [] }
-    })
-  }
-  return configuration;
-}
-
+const searchByName = async (name) => {
+  const productList = await allProdu();
+  const filterByName = productList.filter((element) => {
+    return (
+      element &&
+      element.name &&
+      element.name.toLowerCase().includes(name.toLowerCase())
+    );
+  });
+  console.log(productList);
+  return filterByName;
+};
 module.exports = {
   createProd,
-  searchProducts,
-  getProductById
+  allProdu,
+  searchByName,
 };

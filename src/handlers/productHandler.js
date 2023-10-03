@@ -1,8 +1,9 @@
 const {
   createProd,
-  searchProducts,
-  getProductById
+  allProdu,
+  searchByName,
 } = require("../controllers/productController");
+const { Product } = require("../db");
 
 const createProduct = async (req, res) => {
   try {
@@ -17,6 +18,7 @@ const createProduct = async (req, res) => {
       amountMl,
       alcoholContent,
     } = req.body;
+    console.log(req.body);
     const response = await createProd({name,
       image,
       description,
@@ -31,25 +33,23 @@ const createProduct = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 const allProducts = async (req, res) => {
   try {
-    const { query, country, order, page, category } = req.query;
-    const response = await searchProducts(query, country, order, category, parseInt(page ?? 1, 10))
-    return res.status(200).json(response);
-  } catch(error) {
+    const { name } = req.query;
+    const response = name ? await searchByName(name) : await allProdu();
+    res.status(200).json(response);
+  } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
-
-const getProduct = async (req, res) => {
+const product = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await getProductById(id)
-    res.status(200).json(product);
+    const response = await Product.findByPk(id);
+    res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-module.exports = { createProduct, allProducts, getProduct };
+module.exports = { createProduct, allProducts, product };

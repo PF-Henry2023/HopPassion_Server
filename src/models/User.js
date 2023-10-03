@@ -1,8 +1,7 @@
 const { DataTypes } = require("sequelize");
-const bcrypt = require("bcryptjs");
 
 module.exports = (sequelize) => {
-    const User = sequelize.define(
+    sequelize.define(
         "User",
         {
             id: {
@@ -40,22 +39,10 @@ module.exports = (sequelize) => {
                 defaultValue: "user",
             },
             password: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(5),
                 allowNull: false,
             },
         },
         { timestamps: false}
     );
-
-    //// Método para cifrar la contraseña antes de guardarla en la base de datos:
-    User.beforeCreate(async (user) => {
-        const saltRounds = 10;// Número de rondas de sal para el cifrado
-        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-        user.password = hashedPassword;
-    });
-
-    // Método para comparar contraseñas al realizar la autenticación:
-    User.prototype.comparePassword = async function (password) {
-       return await bcrypt.compare(password, this.password);
-    };
 };

@@ -1,12 +1,9 @@
 const { Router } = require("express");
 const usersRouter = Router();
-const { checkRolesExisted, checkDuplicateUserNameOrEmail} = require ("../utils/authJwt");
 
-const { createUserHandler, updateUserHandler, signinHandler } = require("../handlers/usersHandler");
+const { createUserHandler, updateUserHandler } = require("../handlers/usersHandler");
 
-usersRouter.post("/signup", checkDuplicateUserNameOrEmail, checkRolesExisted, createUserHandler);
-usersRouter.post("/signin", signinHandler);
-usersRouter.put("/update/:id", updateUserHandler);
-
+usersRouter.post("/signup", createUserHandler);
+usersRouter.put("/update", updateUserHandler);
 
 module.exports = usersRouter;

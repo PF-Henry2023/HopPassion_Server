@@ -1,6 +1,6 @@
 const { Product, Categorie } = require("../db");
 
-/* const saveAllData = async (data) => {
+const saveAllData = async (data) => {
   try {
     for (const beer of data) {
       const [newBeer, created] = await Product.findOrCreate({
@@ -41,37 +41,7 @@ const { Product, Categorie } = require("../db");
   } catch (error) {
     throw new Error(error.message);
   }
-}; */
-const saveAllData = async (data) => {
-  try {
-    for (const beer of data) {
-      // Verifica si beer.name tiene un valor definido antes de intentar crear el registro
-      if (beer.name) {
-        const newBeer = await Product.findOrCreate({
-          where: {
-            name: beer.name,
-          },
-          defaults: {
-            name: beer.name,
-            description: beer.description,
-            image: beer.image,
-            countrie: beer.country,
-            price: beer.price,
-            alcoholContent: beer.alcoholContent,
-            stock: beer.stock,
-            amountMl: beer.amountMl
-          }
-        });
-      } else {
-        // Handle el caso en el que beer.name es undefined
-        console.error('El campo "name" está indefinido para una cerveza.');
-      }
-    }
-  } catch (error) {
-    throw new Error(error.message);
-  }
 };
-
 
 module.exports = {
   saveAllData,
