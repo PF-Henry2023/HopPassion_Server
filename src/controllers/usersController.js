@@ -22,11 +22,7 @@ const createUser = async ({name, lastName, address, email, phone, role, password
 };
 
 const getUserById = async (id) => {
-    const userById = await User.findOne({
-        where: {
-            id: id,
-        }
-    })
+    const userById = await User.findOne({ where: { id }})
     if (!userById) throw Error("User not found");
     return userById;
 }
@@ -54,9 +50,18 @@ const signIn = async (email, password) => {
 
     return token;
 };
- 
+
+const getAllUsers = async () => {
+    const users = await User.findAll();
+    if(users.length === 0) throw Error("¡No hay usuarios en la base de datos!");
+
+    return users;
+}
+
 module.exports = {
     createUser,
     updateUser,
     signIn,
+    getAllUsers,
+    getUserById,
 }
