@@ -3,25 +3,24 @@ const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
   sequelize.define(
-    "Categorie",
+    "Review",
     {
       id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-
-      name: {
-        type: DataTypes.STRING,
+      rating: {
+        type: DataTypes.FLOAT,
         allowNull: false,
       },
-
-      description: {
-        type: DataTypes.STRING,
+      comment: {
+        type: DataTypes.TEXT,
         allowNull: true,
       },
     },
-
-    { timestamps: false }
+    {
+      timestamps: true,
+    }
   );
 };
