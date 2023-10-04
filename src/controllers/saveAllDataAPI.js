@@ -1,6 +1,6 @@
 const { Product, Categorie } = require("../db");
 
-/* const saveAllData = async (data) => {
+const saveAllData = async (data) => {
   try {
     for (const beer of data) {
       const [newBeer, created] = await Product.findOrCreate({
@@ -41,8 +41,8 @@ const { Product, Categorie } = require("../db");
   } catch (error) {
     throw new Error(error.message);
   }
-}; */
-const saveAllData = async (data) => {
+};
+/* const saveAllData = async (data) => {
   try {
     for (const beer of data) {
       // Verifica si beer.name tiene un valor definido antes de intentar crear el registro
@@ -55,12 +55,12 @@ const saveAllData = async (data) => {
             name: beer.name,
             description: beer.description,
             image: beer.image,
-            countrie: beer.country,
+            country: beer.country,
             price: beer.price,
             alcoholContent: beer.alcoholContent,
             stock: beer.stock,
-            amountMl: beer.amountMl
-          }
+            amountMl: beer.amountMl,
+          },
         });
       } else {
         // Handle el caso en el que beer.name es undefined
@@ -70,8 +70,7 @@ const saveAllData = async (data) => {
   } catch (error) {
     throw new Error(error.message);
   }
-};
-
+}; */
 
 module.exports = {
   saveAllData,
