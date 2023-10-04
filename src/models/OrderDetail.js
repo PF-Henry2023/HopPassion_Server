@@ -2,29 +2,22 @@ const { DataTypes } = require("sequelize");
 // Exportamos una función que define el modelo
 
 module.exports = (sequelize) => {
-  sequelize.define("Order", {
+  sequelize.define("OrderDetail", {
+
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
 
-    date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-
-    status: {
-      type: DataTypes.ENUM,
-      allowNull: false,
-      values: ["pending", "send", "delivered"],
-      defaultValue: "pending",
-    },
-
-    total: {
+    quantity: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
 
+    unitPrice: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
   });
 };
