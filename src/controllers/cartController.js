@@ -18,6 +18,9 @@ const getCart = async (userId) => { //devuelve carrito del user
                 }]
             }]
         })
+        if(cart.OrderDetails.length == 0) {
+            return null;
+        }
         return mapOrderToCart(cart.toJSON())
     } catch(error) {
         throw new Error(error.message);
