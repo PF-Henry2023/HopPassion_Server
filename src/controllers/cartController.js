@@ -14,7 +14,7 @@ const getCart = async (userId) => { //devuelve carrito del user
                 attributes: [ 'quantity', 'unitPrice' ],
                 include: [{
                     model: Product,
-                    attributes: [ 'name', 'image', 'stock' ]
+                    attributes: [ 'name', 'image', 'stock', 'id' ]
                 }]
             }]
         })
@@ -27,9 +27,15 @@ const getCart = async (userId) => { //devuelve carrito del user
 const addProduct = async ( userId, productId, quantity ) => {
     
     try {
+        if(quantity < 1) {
+            throw new Error("Invalid quantity")
+        } 
         const product = await Product.findByPk(productId)
         if(product == null) {
             throw new Error("Product not found")
+        }
+        if(product.stock < quantity) {
+            throw new Error("Not enough stock")
         }
         const [ cart, cartCreated ] = await Order.findOrCreate({
             where: {
@@ -53,6 +59,9 @@ const addProduct = async ( userId, productId, quantity ) => {
             }
         })
         if(!entryCreated) {
+            if(product.stock < (entry.quantity + quantity)) {
+                throw new Error("Not enough stock")
+            } 
             entry.quantity += quantity
             await entry.save()
         }
@@ -71,10 +80,14 @@ const mapOrderToCart = (order) => {
                 price: row.unitPrice.toString(),
                 name: row.Product.name,
                 image: row.Product.image,
-                stock: row.Product.stock
+                stock: row.Product.stock,
+                id: row.Product.id
             }
         }),
-        total: order.OrderDetails.reduce((accumulator, row) => accumulator + row.unitPrice, 0).toFixed(2).toString()
+        total: order.OrderDetails.reduce((accumulator, row) => {
+            return accumulator + row.unitPrice * row.quantity
+        }, 0).toFixed(2).toString()
+
     }
 }
 
