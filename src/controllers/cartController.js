@@ -26,10 +26,10 @@ const getCart = async (userId) => { //devuelve carrito del user
 
 const addProduct = async ( userId, productId, quantity ) => {
     
+    if(quantity < 1) {
+        throw new Error("Invalid quantity")
+    } 
     try {
-        if(quantity < 1) {
-            throw new Error("Invalid quantity")
-        } 
         const product = await Product.findByPk(productId)
         if(product == null) {
             throw new Error("Product not found")
@@ -71,8 +71,44 @@ const addProduct = async ( userId, productId, quantity ) => {
     }
 }
 
-const removeProduct = (userId, productId, quantity) => {
+const removeProduct = async (userId, productId, quantity) => {
+    
+    if(quantity < 1) {
+        throw new Error("Invalid quantity")
+    } 
 
+    try {
+        const cart = await Order.findOne({
+            attributes: ['id'],
+            where: {
+                user_id: userId,
+                status: "pending"
+            }
+        })
+        if(cart == null) {
+            throw new Error("There is no cart")
+        }
+        const entry = await OrderDetail.findOne({
+            attributes: ['id', 'quantity'],
+            where: {
+                order_id: cart.id,
+                product_id: productId
+            }
+        })
+        if(entry == null) {
+            throw new Error("There is no entry")
+        }
+        if(entry.quantity < quantity) {
+            throw new Error("Not enough items in cart")
+        } else if(entry.quantity == quantity) {
+           await entry.destroy()
+        } else {
+            entry.quantity -= quantity
+            await entry.save()
+        }
+    } catch(error) {
+        throw new Error(error.message);
+    }
 }
 
 const deleteProduct = async (userId, productId) => {
