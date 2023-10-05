@@ -47,7 +47,7 @@ Product.belongsToMany(Categorie, { through: "categorie_product", timestamps: fal
 User.hasMany(Order, { foreignKey: 'user_id', as: 'Orders' });
 Order.belongsTo(User, { foreignKey: 'user_id' });
 
-Order.hasMany(OrderDetail, { foreignKey: 'user_id', as: 'OrderDetails' })
+Order.hasMany(OrderDetail, { foreignKey: 'order_id', as: 'OrderDetails' })
 OrderDetail.belongsTo(Order, { foreignKey: 'order_id' })
 
 Product.hasMany(OrderDetail, {foreignKey: 'product_id', as: 'OrderDetails'})

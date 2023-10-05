@@ -7,7 +7,7 @@ require("dotenv").config();
 const { PASSWORD_JWT } = process.env;
 
 //para verificar en las rutas si el token existe; se puede pasar como funcion a cualquier ruta donde se desee
-const verifyToken = async (req,res,next) => {
+const verifyToken = async (req, res, next) => {
     try {
         const token = req.headers["x-access-token"];// recibimos el token por header
         if(!token) return res.status(403).json({message: "No token provided"});// comprobamos is el token no existe
