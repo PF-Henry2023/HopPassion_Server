@@ -71,6 +71,38 @@ const addProduct = async ( userId, productId, quantity ) => {
     }
 }
 
+const removeProduct = (userId, productId, quantity) => {
+
+}
+
+const deleteProduct = async (userId, productId) => {
+    try {
+        const cart = await Order.findOne({
+            attributes: ['id'],
+            where: {
+                user_id: userId,
+                status: "pending"
+            }
+        })
+        if(cart == null) {
+            throw new Error("There is no cart")
+        }
+        const entry = await OrderDetail.findOne({
+            attributes: ['id'],
+            where: {
+                order_id: cart.id,
+                product_id: productId
+            }
+        })
+        if(entry == null) {
+            throw new Error("There is no entry")
+        }
+        await entry.destroy()
+    } catch(error) {
+        throw new Error(error.message);
+    }
+}
+
 const mapOrderToCart = (order) => {
     return {
         id: order.id,
@@ -94,4 +126,6 @@ const mapOrderToCart = (order) => {
 module.exports = {
     getCart,
     addProduct,
+    removeProduct,
+    deleteProduct
   }
