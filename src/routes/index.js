@@ -9,12 +9,15 @@ const categoriesSave = require("./saveCategoriesRoute");
 const categoriesRoutes = require("./categoriesRoute");
 const filterConfigurationRoutes = require("./filterConfigurationRouter")
 
+const mercadoPagoRoute = require("./mercadoPagoRoute");
+
 router.use("/dataUpload", saveAllRoute);
 router.use("/review", reviewRouter); 
 router.use("/users", usersRouter);
 router.use("/saveCategories", categoriesSave);
 router.use("/product", productRouter);
 router.use("/categories", categoriesRoutes);
-router.use("/filters", filterConfigurationRoutes)
+router.use("/filters", filterConfigurationRoutes);
+router.use("/mercadoPago", mercadoPagoRoute)
 
 module.exports = router;
