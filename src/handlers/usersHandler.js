@@ -32,7 +32,7 @@ const signinHandler = async(req,res) => {
     }
 };
 
-const getAllUsersHandler = async(req, res) => {
+const getAllUsersHandler = async(req, res) => { //ver
     try {
         const response = await getAllUsers();
         res.status(200).json(response);
@@ -41,7 +41,7 @@ const getAllUsersHandler = async(req, res) => {
     }
 }
 
-const getUserByIdHandler = async(req, res) => {
+const getUserByIdHandler = async(req, res) => { //ver
     const { id } = req.params;
     try {
         const response = await getUserById(id);

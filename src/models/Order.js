@@ -11,7 +11,7 @@ module.exports = (sequelize) => {
 
     date: {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
     },
 
     status: {
@@ -25,5 +25,6 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+
   });
 };

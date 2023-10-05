@@ -8,6 +8,7 @@ const usersRouter = require("./usersRouter");
 const categoriesSave = require("./saveCategoriesRoute");
 const categoriesRoutes = require("./categoriesRoute");
 const filterConfigurationRoutes = require("./filterConfigurationRouter")
+const cartRouter = require("./cartRouter")
 
 const mercadoPagoRoute = require("./mercadoPagoRoute");
 
@@ -17,7 +18,9 @@ router.use("/users", usersRouter);
 router.use("/saveCategories", categoriesSave);
 router.use("/product", productRouter);
 router.use("/categories", categoriesRoutes);
-router.use("/filters", filterConfigurationRoutes);
 router.use("/mercadoPago", mercadoPagoRoute)
+router.use("/filters", filterConfigurationRoutes)
+router.use("/cart", cartRouter)
+
 
 module.exports = router;
