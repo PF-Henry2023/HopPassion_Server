@@ -17,7 +17,17 @@ const createUser = async ({name, lastName, address, email, phone, role, password
             password
         }});
         if(!created) throw Error("User already exists");
-        const token = jwt.sign({id: user.id}, PASSWORD_JWT, { expiresIn: 86400} );
+        const token = jwt.sign(
+            {
+              id: user.id,
+              name: user.name,
+              lastName: user.lastName,
+              address: user.address,
+              email: user.email,
+              phone: user.phone,
+              role: user.role,
+              password: user.password,
+            }, PASSWORD_JWT, { expiresIn: 86400} );
     return token;
 };
 
@@ -46,7 +56,17 @@ const signIn = async (email, password) => {
     const matchPassword = await userFound.comparePassword(password)
     if(!matchPassword) throw Error("Invalid password");
     console.log(userFound);
-    const token = jwt.sign({id: userFound.id}, PASSWORD_JWT, { expiresIn: 86400} );
+    const token = jwt.sign(
+        {
+          id: userFound.id,
+          name: userFound.name,
+          lastName: userFound.lastName,
+          address: userFound.address,
+          email: userFound.email,
+          phone: userFound.phone,
+          role: userFound.role,
+          password: userFound.password,
+        }, PASSWORD_JWT, { expiresIn: 86400} );
 
     return token;
 };
