@@ -40,7 +40,7 @@ const updateUserHandler = async (req, res) => {
 const signinHandler = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const token = await authentication({ email, password });
+    const token = await signIn({ email, password });
     res
       .status(200)
       .header("authorization", `Bearer ${token}`)
