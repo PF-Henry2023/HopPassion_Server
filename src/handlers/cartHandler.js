@@ -29,7 +29,7 @@ const setProductHandler = async (req, res) => {
     const { productId, quantity = 1 } = req.body;
     try {
         const response = await setProduct(userId, productId, quantity)
-        res.status(200).send()
+        res.status(200).json(response)
     } catch(error) {
         res.status(500).json({ error: error.message })
     }

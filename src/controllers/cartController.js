@@ -75,7 +75,6 @@ const addProduct = async ( userId, productId, quantity ) => {
 }
 
 const setProduct = async ( userId, productId, quantity ) => {
-    
     if(quantity < 0) {
         throw new Error("Invalid quantity")
     } 
@@ -106,7 +105,11 @@ const setProduct = async ( userId, productId, quantity ) => {
                 product_id: product.id,
                 quantity: quantity,
                 unitPrice: product.price
-            }
+            },
+            include: [{
+                model: Product,
+                attributes: [ 'name', 'image', 'stock', 'id' ]
+            }]
         })
         if(!entryCreated) {
             entry.quantity = quantity
@@ -115,7 +118,7 @@ const setProduct = async ( userId, productId, quantity ) => {
         if(entry.quantity == 0) {
             await entry.destroy()
         }
-        return true;
+        return { id: product.id, quantity: quantity }
     } catch(error) {
         throw new Error(error.message);
     }
