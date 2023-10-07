@@ -61,11 +61,7 @@ const signIn = async (email, password) => {
           id: userFound.id,
           name: userFound.name,
           lastName: userFound.lastName,
-          address: userFound.address,
-          email: userFound.email,
-          phone: userFound.phone,
           role: userFound.role,
-          password: userFound.password,
         }, PASSWORD_JWT, { expiresIn: 86400} );
 
     return token;
