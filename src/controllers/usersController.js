@@ -1,7 +1,9 @@
 const { User } = require("../db");
 const jwt = require("jsonwebtoken");
+const { decodeTokenOauth } = require("../utils/google");
 require("dotenv").config();
 const { PASSWORD_JWT } = process.env;
+
 
 const createUser = async ({name, lastName, address, email, phone, role, password}) => {
 
@@ -74,10 +76,47 @@ const getAllUsers = async () => {
     return users;
 }
 
+//FUNCIONES AUTENTICACION CON TERCEROS:
+// registro OAuth2: se utiliza para procesar y autenticar a un usuario que inicia sesión a través de Google OAuth2. 
+const newUserOauth = async (data) => {
+    const { email, name, sub } = await decodeTokenOauth(data);
+    const [{ id, role }, created] = await User.findOrCreate({
+      where: { email },
+      defaults: {
+        name,
+        email,
+        googleId: sub,
+      },
+    });
+    if (!created) {
+      const message = "User Already exist";
+      return message;
+    }
+    //await newUserEmail(name, email);
+    const token = jwt.sign({ id, role, name }, PASSWORD_JWT);
+    return token;
+};
+
+//login OAuth: controlador de autenticación que se utiliza para autenticar a un usuario que ha iniciado sesión a través de OAuth
+const authenticationOauth = async (data) => {
+    const { email } = await decodeTokenOauth(data);
+    const user = await User.findOne({ where: { email } });
+    if (!user) throw new Error("¡A gmail account is not regiter for this user!");
+    if (user.isActive === false) throw new Error("This user is banned");
+  
+    const token = jwt.sign(
+      { id: user.id, role: user.role, name: user.name },
+      PASSWORD_JWT
+    );
+    return token;
+};
+
 module.exports = {
     createUser,
     updateUser,
     signIn,
     getAllUsers,
     getUserById,
+    newUserOauth, 
+    authenticationOauth, 
 }
