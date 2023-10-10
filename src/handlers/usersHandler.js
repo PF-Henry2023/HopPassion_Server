@@ -79,8 +79,10 @@ const signupOauth = async (req, res) => {
   const { tokenId } = req.body; //encoded token
   try {
     const response = await newUserOauth(tokenId);
+    console.log(response);
     return res.status(200).json({ message: response });
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };

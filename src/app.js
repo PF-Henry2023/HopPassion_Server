@@ -3,18 +3,11 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const routes = require("./routes/index.js");
-// const { auth } = require('express-oauth2-jwt-bearer');
 
 require("./db.js");
 
 const server = express();
 server.name = "API";
-
-// const jwtCheck = auth({
-//   audience: 'http://localhost:3001',
-//   issuerBaseURL: 'https://dev-ke2kmb45sqnv6r5n.us.auth0.com/',
-//   tokenSigningAlg: 'RS256'
-// });
 
 server.use(
   bodyParser.urlencoded({

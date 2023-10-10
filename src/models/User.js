@@ -16,11 +16,11 @@ module.exports = (sequelize) => {
             },
             lastName: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             address: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             email: {
                 type: DataTypes.STRING,
@@ -31,7 +31,7 @@ module.exports = (sequelize) => {
             },
             phone: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             role: {
                 type: DataTypes.ENUM,
@@ -41,7 +41,7 @@ module.exports = (sequelize) => {
             },
             password: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             googleId: {
                 type: DataTypes.STRING,
@@ -59,7 +59,7 @@ module.exports = (sequelize) => {
     //// Método para cifrar la contraseña antes de guardarla en la base de datos:
     User.beforeCreate(async (user) => {
         const saltRounds = 10;// Número de rondas de sal para el cifrado
-        const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+        const hashedPassword = await bcrypt.hash(user.password || "clave_segura", saltRounds);
         user.password = hashedPassword;
     });
 

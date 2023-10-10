@@ -75,7 +75,7 @@ const updateAllData = async () => {
   try {
     const allData = await Product.findAll();
     for (const beer of allData) {
-      const numeroRandom = Math.floor(Math.random() * 10) + 1;
+      const numeroRandom = Math.floor(Math.random() * 1000) + 1;
       const newData = {
         stock: numeroRandom,
       };
