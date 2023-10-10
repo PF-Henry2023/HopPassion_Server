@@ -20,7 +20,11 @@ module.exports = (sequelize) => {
             },
             address: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
+            },
+            postalCode: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
             },
             email: {
                 type: DataTypes.STRING,
@@ -31,7 +35,7 @@ module.exports = (sequelize) => {
             },
             phone: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             role: {
                 type: DataTypes.ENUM,
@@ -42,6 +46,14 @@ module.exports = (sequelize) => {
             password: {
                 type: DataTypes.STRING,
                 allowNull: false,
+            },
+            city: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            country: {
+                type: DataTypes.STRING,
+                allowNull: true,
             },
         },
         { timestamps: false}
