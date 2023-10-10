@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
             },
             address: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             postalCode: {
                 type: DataTypes.INTEGER,
@@ -35,7 +35,7 @@ module.exports = (sequelize) => {
             },
             phone: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             role: {
                 type: DataTypes.ENUM,
