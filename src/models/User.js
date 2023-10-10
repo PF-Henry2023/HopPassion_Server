@@ -22,6 +22,11 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+          
+            postalCode: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
             email: {
                 type: DataTypes.STRING,
                 allowNull: false,
@@ -51,6 +56,14 @@ module.exports = (sequelize) => {
             isActive: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true,
+            },
+            city: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            country: {
+                type: DataTypes.STRING,
+                allowNull: true,
             },
         },
         { timestamps: false}

@@ -12,6 +12,9 @@ const createUser = async ({
   phone,
   role,
   password,
+  postalCode,
+  city,
+  country,
 }) => {
   const [user, created] = await User.findOrCreate({
     where: { email },
@@ -23,6 +26,9 @@ const createUser = async ({
       phone,
       role,
       password,
+      postalCode,
+      city,
+      country,
     },
   });
   if (!created) throw Error("User already exists");
@@ -57,6 +63,9 @@ const updateUser = async (id, dataUser) => {
     "email",
     "phone",
     "password",
+    "postalCode",
+    "city",
+    "country",
   ]; //contiene los nombres de los campos que se pueden actualizar
   const updateFields = Object.keys(dataUser); //Se obtienen los nombres de los campos que se desean actualizar
   const invalidFields = updateFields.filter(
