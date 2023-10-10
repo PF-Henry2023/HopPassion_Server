@@ -1,4 +1,4 @@
-const { saveAllData } = require("../controllers/saveAllDataAPI");
+const { saveAllData, updateAllData } = require("../controllers/saveAllDataAPI");
 
 const saveAllInfo = async (req, res) => {
   try {
@@ -10,6 +10,16 @@ const saveAllInfo = async (req, res) => {
   }
 };
 
+const updateData = async (req, res) => {
+  try {
+    const updateData = await updateAllData();
+    res.status(200).json({ message: "DB actualizada con exito" })
+  } catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+}
+
 module.exports = {
   saveAllInfo,
+  updateData
 };
