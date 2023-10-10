@@ -93,6 +93,7 @@ const loginOauth = async (req, res) => {
     const tokenResponse = await authenticationOauth(tokenId);
     res.status(200).json({ token: tokenResponse });
   } catch (error) {
+    console.log(error);
     res.status(404).json({ error: error.message });
   }
 };

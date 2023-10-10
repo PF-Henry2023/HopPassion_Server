@@ -142,7 +142,8 @@ const authenticationOauth = async (data) => {
 
   const token = jwt.sign(
     { id: user.id, role: user.role, name: user.name },
-    PASSWORD_JWT
+    PASSWORD_JWT,
+    { audience: "" }
   );
   return token;
 };
