@@ -94,7 +94,6 @@ const signIn = async (email, password) => {
 const getAllUsers = async () => {
   const users = await User.findAll();
   if (users.length === 0) throw Error("¡No hay usuarios en la base de datos!");
-
   return users;
 };
 
