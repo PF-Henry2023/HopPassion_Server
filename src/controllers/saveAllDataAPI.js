@@ -7,7 +7,7 @@ const saveAllData = async (data) => {
         where: {
           name: beer.name,
         },
-        defaults:{
+        defaults: {
           name: beer.name,
           description: beer.description,
           image: beer.image,
@@ -15,28 +15,27 @@ const saveAllData = async (data) => {
           price: beer.price,
           alcoholContent: beer.alcoholContent,
           stock: beer.stock,
-          amountMl: beer.amountMl
-        }
+          amountMl: beer.amountMl,
+        },
       });
-      if(created){
+      if (created) {
         console.log("Nuevo producto creado");
       } else {
-        throw new Error("Producto ya existente en la Base de datos")
+        throw new Error("Producto ya existente en la Base de datos");
       }
 
       const categorie = await Categorie.findOne({
         where: {
-          name: beer.categorie
-        }
+          name: beer.categorie,
+        },
       });
 
       if (categorie) {
-        await newBeer.addCategories(categorie); 
+        await newBeer.addCategories(categorie);
         console.log(`Producto relacionado con categoría: ${beer.categorie}`);
       } else {
         console.log(`Categoría no encontrada: ${beer.categorie}`);
       }
-
     }
   } catch (error) {
     throw new Error(error.message);
@@ -72,6 +71,26 @@ const saveAllData = async (data) => {
   }
 }; */
 
+const updateAllData = async () => {
+  try {
+    const allData = await Product.findAll();
+    for (const beer of allData) {
+      const numeroRandom = Math.floor(Math.random() * 1000) + 1;
+      const newData = {
+        stock: numeroRandom,
+      };
+      await Product.update(newData, {
+        where: {
+          id: beer.id,
+        },
+      });
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 module.exports = {
   saveAllData,
+  updateAllData,
 };

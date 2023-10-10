@@ -39,7 +39,7 @@ module.exports = (sequelize) => {
       },
       stock: {
         type: DataTypes.INTEGER,
-        validate: { is: /^(10|[1-9])$/ },
+        validate: { is: /^(?:[1-9]\d{0,2}|1000)$/ },
         allowNull: false,
         defaultValue: 1,
       },
