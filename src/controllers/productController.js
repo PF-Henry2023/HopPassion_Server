@@ -1,6 +1,5 @@
 const { Product, Categorie } = require("../db");
-const { Op, Sequelize } = require('sequelize');
-
+const { Op, Sequelize } = require("sequelize");
 
 const createProd = async ({
   name,
@@ -17,8 +16,8 @@ const createProd = async ({
     // Busca la categoría por nombre
     const categorie = await Categorie.findOne({
       where: {
-        name: category
-      }
+        name: category,
+      },
     });
 
     if (!categorie) {
@@ -40,69 +39,74 @@ const createProd = async ({
       await createNewProd.addCategorie(categorie);
       return createNewProd;
     }
-  } catch(error) {
+  } catch (error) {
     return error;
   }
 };
 
 const searchProducts = async (query, country, order, category, page) => {
-  const pageSize = 20; 
+  const pageSize = 20;
   const offset = (page - 1) * pageSize;
   try {
     const result = await Product.findAndCountAll({
-      attributes: ['id', 'name', 'price', 'image', 'stock'],
+      attributes: ["id", "name", "price", "image", "stock"],
       where: filterConfiguration(query, country),
       order: orderingConfiguration(order),
       include: includeConfiguration(category),
       limit: pageSize,
-      offset: offset
+      offset: offset,
     });
-    return { products: result.rows, page: { page, hasMore: ((offset + result.rows.length) < result.count)} };
-  } catch(error) {
-    return error;
+    return {
+      products: result.rows,
+      page: { page, hasMore: offset + result.rows.length < result.count },
+    };
+  } catch (error) {
+    throw new Error(error.message);
   }
-} 
+};
 
 const getProductById = async (id) => {
   try {
-      const result = (await Product.findByPk(id, { 
+    const result = (
+      await Product.findByPk(id, {
         include: {
-          model: Categorie,  
+          model: Categorie,
           attributes: ["name"],
           through: { attributes: [] },
-          as: 'Categories' 
-        } 
-      })).toJSON();
-      const product = {
-        ...result,
-        categories: result.Categories.map((category) => category.name)
-      }
-      delete product.Categories;
-      return product;  
-    } catch(error) {
-      return error;
-    }
-}
+          as: "Categories",
+        },
+      })
+    ).toJSON();
+    const product = {
+      ...result,
+      categories: result.Categories.map((category) => category.name),
+    };
+    delete product.Categories;
+    return product;
+  } catch (error) {
+    return error;
+  }
+};
 
 const filterConfiguration = (query, country) => {
-  const filters = []
-  if(query) {
-    filters.push({ name: { [Op.iLike]: `%${query}%` } })
+  const filters = [];
+  if (query) {
+    filters.push({ name: { [Op.iLike]: `%${query}%` } });
   }
-  if(country) {
-    filters.push({ country: { [Op.eq]: country } })
+  if (country) {
+    filters.push({ country: { [Op.eq]: country } });
   }
   return {
-    [Op.and]: filters
+    [Op.and]: filters,
   };
-}
+};
 
 const orderingConfiguration = (order) => {
   switch (order) {
     case "A_Z":
-      return [[Sequelize.fn('lower', Sequelize.col('name')), "ASC"]];
+      return [[Sequelize.fn("lower", Sequelize.col("name")), "ASC"]];
     case "Z_A":
-      return [[Sequelize.fn('lower', Sequelize.col('name')), "DESC"]];
+      return [[Sequelize.fn("lower", Sequelize.col("name")), "DESC"]];
     case "priceASC":
       return [["price", "ASC"]];
     case "priceDESC":
@@ -112,26 +116,26 @@ const orderingConfiguration = (order) => {
     case "alcoholDESC":
       return [["alcoholContent", "DESC"]];
     default:
-      return []
+      return [];
   }
-}
+};
 
 const includeConfiguration = (category) => {
   const configuration = [];
-  if(category) {
-    configuration.push({ 
-      model: Categorie, 
+  if (category) {
+    configuration.push({
+      model: Categorie,
       as: "Categories",
       attributes: [],
       where: { id: category },
-      through: { attributes: [] }
-    })
+      through: { attributes: [] },
+    });
   }
   return configuration;
-}
+};
 
 module.exports = {
   createProd,
   searchProducts,
-  getProductById
+  getProductById,
 };
