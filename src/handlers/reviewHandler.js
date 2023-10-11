@@ -34,7 +34,8 @@ const updateReview = async (req, res) => {
 };
 const listReview = async (req, res) => {
   try {
-    const response = await listRev();
+    const { idProd } = req.query;
+    const response = await listRev(idProd);
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });

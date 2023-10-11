@@ -8,8 +8,8 @@ const {
 const reviewRouter = Router();
 
 reviewRouter.post("/create", createReview);
-reviewRouter.post("/delete", deleteReview);
-reviewRouter.post("/update", updateReview);
-reviewRouter.post("/list", listReview);
+reviewRouter.delete("/delete", deleteReview);
+reviewRouter.put("/update", updateReview);
+reviewRouter.get("/list?", listReview);
 
 module.exports = reviewRouter;

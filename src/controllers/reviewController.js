@@ -59,9 +59,8 @@ const updateRev = async (idReview, changes) => {
   }
 };
 
-const listRev = async () => {
+const listRev = async (idProd) => {
   try {
-    // Utiliza el método findAll para obtener todas las revisiones
     const reviews = await Review.findAll();
     return reviews;
   } catch (error) {

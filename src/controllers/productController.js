@@ -49,7 +49,7 @@ const searchProducts = async (query, country, order, category, page) => {
   const offset = (page - 1) * pageSize;
   try {
     const result = await Product.findAndCountAll({
-      attributes: ["id", "name", "price", "image", "stock"],
+      attributes: ["id", "name", "price", "image", "stock", "alcoholContent"],
       where: filterConfiguration(query, country),
       order: orderingConfiguration(order),
       include: includeConfiguration(category),
