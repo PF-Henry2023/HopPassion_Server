@@ -1,9 +1,43 @@
 const payment = require("../utils/mercadoPago");
+const nodemailer = require("nodemailer"); // Import Nodemailer
+require("dotenv").config();
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
+
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: emailUser,
+    pass: emailPass,
+  },
+});
+
+const sendPaymentNotification = async (emailDestinatario, paymentAmount) => {
+  const mailOptions = {
+    from: emailUser,
+    to: emailDestinatario,
+    subject: "Confirmacion de pago",
+    text: `Gracias por confiar en nosotros. El monto total de tu compra fue de: ${paymentAmount} pesos`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Payment notification email sent to: " + emailDestinatario);
+  } catch (error) {
+    console.error("Error sending payment notification email: " + error);
+  }
+};
 
 const mercadoPagoPayment = async (req, res) => {
   try {
-    const { description, transaction_amount, email, payment_method_id, token, installments } =
-      req.body;
+    const {
+      description,
+      transaction_amount,
+      email,
+      payment_method_id,
+      token,
+      installments,
+    } = req.body;
     const preference = {
       items: [
         {
@@ -27,11 +61,21 @@ const mercadoPagoPayment = async (req, res) => {
         email: req.body.payer.email,
       },
     };
+    const emailDestinatario = payment_data.payer.email;
+    // Process the payment and send the email inside the .then block
     payment.payment
       .save(payment_data)
-      .then(function (response) {
+      .then(async function (response) {
         console.log("Respuesta de MercadoPago:", response.body);
+        console.log("Respuesta de MercadoPago:", req.body);
         res.json({ status: response.status, payment_id: response.body.id });
+
+        // Send the payment notification email after a successful payment
+        await sendPaymentNotification(
+          emailDestinatario,
+          description,
+          transaction_amount
+        );
       })
       .catch(function (error) {
         console.error("Error al procesar el pago:", error);

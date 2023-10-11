@@ -7,6 +7,10 @@ const {
   newUserOauth,
   authenticationOauth,
 } = require("../controllers/usersController");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
 
 const createUserHandler = async (req, res) => {
   const {
@@ -34,10 +38,47 @@ const createUserHandler = async (req, res) => {
       city,
       country,
     });
+    await sendWelcomeEmail(email);
     res.status(201).json(response);
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
+  }
+};
+
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: emailUser,
+    pass: emailPass,
+  },
+});
+
+const sendWelcomeEmail = async (userEmail) => {
+  // Send a welcome email to the user
+  const mailOptions = {
+    from: emailUser,
+    to: userEmail,
+    subject: "Bienvenido a Hop Passion!",
+    text: "Bienvenido a nuestra plataforma. Estamos felices de tener por aca!",
+    html: `
+      <p>Welcome to our platform. We are excited to have you on board!</p>
+      <img src="cid:unique-image-id" alt="Welcome Image" />
+    `,
+    attachments: [
+      {
+        filename: "welcome-image.png", // The name for the attached file
+        path: "src/utils/hombre-beber-cerveza.webp", // Replace with the actual path to your image
+        cid: "unique-image-id", // A unique identifier for the image
+      },
+    ],
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Welcome email sent to: " + userEmail);
+  } catch (error) {
+    console.error("Error sending welcome email: " + error);
   }
 };
 
