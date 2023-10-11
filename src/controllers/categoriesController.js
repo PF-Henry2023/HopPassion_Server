@@ -4,10 +4,10 @@ const createNewCategorie = async ({ name, description }) => {
   try {
     const [newCategory, created] = await Categorie.findOrCreate({
       where: {
-        category: name,
+        name: name,
       },
       defaults: {
-        category: name,
+        name,
         description,
       },
     });
@@ -36,16 +36,16 @@ const getCategories = async () => {
 
 const findCategorie = async (data) => {
   try {
-    const category_p = await Categorie.findOne({
+    const category = await Categorie.findOne({
       where: {
-        category: data,
+        name: data,
       },
       include: "Products",
     });
-    if (!category_p) {
+    if (!category) {
       throw new Error("No se encontro la categoria");
     } else {
-      return category_p;
+      return category;
     }
   } catch (error) {
     throw new Error(error.message);

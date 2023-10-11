@@ -5,10 +5,10 @@ const saveCategoriesDB = async (data) => {
     for (const category of data) {
       const newCategory = await Categorie.findOrCreate({
         where: {
-          category: category,
+          name: category,
         },
         defaults: {
-          category: category,
+          name: category,
         },
       });
     }
