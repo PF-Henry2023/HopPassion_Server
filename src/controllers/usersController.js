@@ -109,28 +109,30 @@ const getAllUsers = async () => {
 //FUNCIONES AUTENTICACION CON TERCEROS:
 // registro OAuth2: se utiliza para procesar y autenticar a un usuario que inicia sesión a través de Google OAuth2.
 const newUserOauth = async (data) => {
-  const { email, given_name, family_name, sub } = await decodeTokenOauth(data);
-  console.log({ email, given_name, family_name, sub });
-  const [{ id, role }, created] = await User.findOrCreate({
-    where: { email },
-    defaults: {
-      name: given_name,
-      lastName: family_name,
-      email,
-      googleId: sub,
-    },
-  });
-  if (!created) {
-    const message = "User Already exist";
-    return message;
+  try {
+    const { email, given_name, family_name, sub } = await decodeTokenOauth(data);
+    const [{ id, role }, created] = await User.findOrCreate({
+      where: { email },
+      defaults: {
+        name: given_name,
+        lastName: family_name,
+        email,
+        googleId: sub,
+      },
+    });
+    if (!created) {
+      throw new Error("User Already exist");
+    }
+    console.log("el usuario se creo con exito");
+    const token = jwt.sign(
+      { id, role, name: given_name, lastName: family_name },
+      PASSWORD_JWT,
+      { audience: "" }
+    );
+    return token;
+  } catch (error) {
+    throw new Error(error)
   }
-  console.log("el usuario se creo con exito");
-  const token = jwt.sign(
-    { id, role, name: given_name, lastName: family_name },
-    PASSWORD_JWT,
-    { audience: "" }
-  );
-  return token;
 };
 
 //login OAuth: controlador de autenticación que se utiliza para autenticar a un usuario que ha iniciado sesión a través de OAuth
