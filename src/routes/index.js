@@ -13,7 +13,7 @@ const protectedRouter = require("./protectedRouter");
 const mercadoPagoRoute = require("./mercadoPagoRoute");
 
 router.use("/dataUpload", saveAllRoute);
-router.use("/review", reviewRouter); 
+router.use("/review", reviewRouter);
 router.use("/users", usersRouter);
 router.use("/saveCategories", categoriesSave);
 router.use("/product", productRouter);

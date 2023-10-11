@@ -5,18 +5,18 @@ const saveCategoriesDB = async (data) => {
     for (const category of data) {
       const newCategory = await Categorie.findOrCreate({
         where: {
-          name: category
+          category: category,
         },
         defaults: {
-          name: category
-        }
-      })
+          category: category,
+        },
+      });
     }
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
 
 module.exports = {
-  saveCategoriesDB
-}
+  saveCategoriesDB,
+};
