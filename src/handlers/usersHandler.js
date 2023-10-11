@@ -9,7 +9,18 @@ const {
 } = require("../controllers/usersController");
 
 const createUserHandler = async (req, res) => {
-  const { name, lastName, address, email, phone, role, password } = req.body;
+  const {
+    name,
+    lastName,
+    address,
+    email,
+    phone,
+    role,
+    password,
+    postalCode,
+    city,
+    country,
+  } = req.body;
   try {
     const response = await createUser({
       name,
@@ -19,6 +30,9 @@ const createUserHandler = async (req, res) => {
       phone,
       role,
       password,
+      postalCode,
+      city,
+      country,
     });
     res.status(201).json(response);
   } catch (error) {
