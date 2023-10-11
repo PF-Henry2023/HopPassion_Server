@@ -34,7 +34,7 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       alcoholContent: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL,
         allowNull: false,
       },
       stock: {
