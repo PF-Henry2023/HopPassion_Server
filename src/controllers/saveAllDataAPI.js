@@ -26,7 +26,7 @@ const saveAllData = async (data) => {
 
       const categorie = await Categorie.findOne({
         where: {
-          name: beer.categorie,
+          category: beer.categorie,
         },
       });
 
