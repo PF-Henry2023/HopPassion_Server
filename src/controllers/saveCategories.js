@@ -2,13 +2,14 @@ const { Categorie } = require("../db");
 
 const saveCategoriesDB = async (data) => {
   try {
+    console.log(data);
     for (const category of data) {
       const newCategory = await Categorie.findOrCreate({
         where: {
-          name: category,
+          name: category.name,
         },
         defaults: {
-          name: category,
+          name: category.name,
         },
       });
     }
