@@ -6,6 +6,7 @@ const {
   getUserById,
   newUserOauth,
   authenticationOauth,
+  totalUsersStadistics,
 } = require("../controllers/usersController");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -161,4 +162,5 @@ module.exports = {
   getUserByIdHandler,
   signupOauth,
   loginOauth,
+
 };
