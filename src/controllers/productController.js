@@ -57,7 +57,7 @@ const searchProducts = async (query, country, order, category, page) => {
 
   try {
     let result = await Product.findAndCountAll({
-      attributes: ["id", "name", "price", "image", "stock", "alcoholContent"],
+      attributes: ["id", "name", "price", "image", "stock", "alcoholContent","isDeleted"],
       where: filterConfiguration(query, country),
       order: orderingConfiguration(order),
       include: includeConfiguration(category),
@@ -154,9 +154,55 @@ const includeConfiguration = (category) => {
   }
   return configuration;
 };
+const bloquear = async (id) => {
+  const productsd = await Product.update(
+    { isDeleted: false }, // Corrige isDeleted en lugar de isDelete
+    { where: { id } }
+  );
+  
+  if (productsd[0] === 1) {
+    return "Producto bloqueado";
+  } else {
+    return "Producto no encontrado";
+  }
+};
+
+const desbloquear = async (id) => {
+  const productsu = await Product.update(
+    { isDeleted: true },
+    { where: { id } }
+  );
+
+  if (productsu[0] === 1) {
+    return "Producto desbloqueado";
+  } else {
+    throw new Error("Producto no encontrado o no pudo ser desbloqueado");
+  }
+};
+
+const editarProducto = async (id, name, alcoholContent, image, stock, price) => {
+  
+    const [rowsUpdated, [updatedProduct]] = await Product.update(
+      {
+        name,
+        alcoholContent,
+        image,
+        stock,
+        price,
+      },
+      { where: { id }, returning: true }
+    );
+
+    return rowsUpdated === 1 ? updatedProduct : null;
+  
+};
+
 
 module.exports = {
   createProd,
   searchProducts,
   getProductById,
+  bloquear,
+  desbloquear,
+  editarProducto
 };
