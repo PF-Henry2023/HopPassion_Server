@@ -4,8 +4,6 @@ const { Review, Product, User } = require("../db");
 const createRev = async (review) => {
   try {
     const { idProd, idUser, ...reviewData } = review;
-
-    console.log(reviewData);
     const product = await Product.findByPk(idProd);
     if (!product) {
       throw new Error(`Producto con id ${idProd} no encontrado.`);
@@ -16,8 +14,6 @@ const createRev = async (review) => {
       throw new Error(`Usuario con id ${idUser} no encontrado.`);
     }
 
-    
-    despues agregamos esto cuando termine el flujo
     const existingReview = await Review.findOne({
       where: { UserId: idUser, ProductId: idProd },
     });
