@@ -4,6 +4,17 @@ const { decodeTokenOauth } = require("../utils/google");
 const { userActiveDesactive } = require("../utils/generic_functions");
 require("dotenv").config();
 const { PASSWORD_JWT } = process.env;
+const nodemailer = require("nodemailer");
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
+
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: emailUser,
+    pass: emailPass,
+  },
+});
 
 const createUser = async ({
   name,
@@ -130,6 +141,7 @@ const newUserOauth = async (data) => {
       throw new Error("User Already exist");
     }
     console.log("el usuario se creo con exito");
+    await sendWelcomeEmail(email);
     const token = jwt.sign(
       { id, role, name: given_name, lastName: family_name },
       PASSWORD_JWT,
@@ -138,6 +150,34 @@ const newUserOauth = async (data) => {
     return token;
   } catch (error) {
     throw new Error(error);
+  }
+};
+
+const sendWelcomeEmail = async (userEmail) => {
+  // Send a welcome email to the user
+  const mailOptions = {
+    from: emailUser,
+    to: userEmail,
+    subject: "Bienvenido a Hop Passion!",
+    text: "Bienvenido a nuestra plataforma. Estamos felices de tener por aca!",
+    html: `
+      <p>Welcome to our platform. We are excited to have you on board!</p>
+      <img src="cid:unique-image-id" alt="Welcome Image" />
+    `,
+    attachments: [
+      {
+        filename: "welcome-image.png", // The name for the attached file
+        path: "src/utils/hombre-beber-cerveza.webp", // Replace with the actual path to your image
+        cid: "unique-image-id", // A unique identifier for the image
+      },
+    ],
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Welcome email sent to: " + userEmail);
+  } catch (error) {
+    console.error("Error sending welcome email: " + error);
   }
 };
 
