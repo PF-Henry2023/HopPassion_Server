@@ -1,3 +1,4 @@
+const Sequelize = require("sequelize");
 const { Review, Product, User } = require("../db");
 
 const createRev = async (review) => {
@@ -103,10 +104,15 @@ const listRev = async (idUser, idProd) => {
     }
 
     if (idUser && idProd) {
-      const userReview = reviews.find((review) => review.UserId === idUser);
-      const otherReviews = reviews.filter((review) => review.UserId !== idUser);
-
-      return [userReview, ...otherReviews];
+      const otherReviews = await Review.findAll({
+        where: {
+          ProductId: idProd,
+          UserId: {
+            [Sequelize.Op.ne]: idUser,
+          },
+        },
+      });
+      return [...reviews, ...otherReviews];
     }
 
     return reviews;
@@ -114,7 +120,6 @@ const listRev = async (idUser, idProd) => {
     throw new Error(`Error retrieving Review: ${error.message}`);
   }
 };
-
 module.exports = {
   createRev,
   deleteRev,
