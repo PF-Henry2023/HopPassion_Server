@@ -1,6 +1,7 @@
 const { User } = require("../db");
 const jwt = require("jsonwebtoken");
 const { decodeTokenOauth } = require("../utils/google");
+const { userActiveDesactive } = require("../utils/generic_functions");
 require("dotenv").config();
 const { PASSWORD_JWT } = process.env;
 const nodemailer = require("nodemailer");

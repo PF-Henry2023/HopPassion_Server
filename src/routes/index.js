@@ -11,6 +11,8 @@ const filterConfigurationRoutes = require("./filterConfigurationRouter");
 const cartRouter = require("./cartRouter");
 const protectedRouter = require("./protectedRouter");
 const mercadoPagoRoute = require("./mercadoPagoRoute");
+const buysRouter = require("./buysRouter");
+const stadisticsRouter = require("./stadisticsRouter");
 
 router.use("/dataUpload", saveAllRoute);
 router.use("/review", reviewRouter);
@@ -22,5 +24,7 @@ router.use("/mercadoPago", mercadoPagoRoute);
 router.use("/filters", filterConfigurationRoutes);
 router.use("/cart", cartRouter);
 router.use("/protected", protectedRouter);
+router.use("/buy", buysRouter);
+router.use("/stadistics", stadisticsRouter);
 
 module.exports = router;
