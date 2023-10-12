@@ -15,7 +15,7 @@ const createRev = async (review) => {
       throw new Error(`Usuario con id ${idUser} no encontrado.`);
     }
 
-    /*
+    
     despues agregamos esto cuando termine el flujo
     const existingReview = await Review.findOne({
       where: { UserId: idUser, ProductId: idProd },
@@ -26,7 +26,7 @@ const createRev = async (review) => {
         "El usuario ya ha realizado una revisión para este producto."
       );
     }
-    */
+    
 
     const newReview = await Review.create(reviewData);
     await newReview.setProduct(product);
