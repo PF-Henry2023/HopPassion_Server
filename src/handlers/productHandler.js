@@ -1,7 +1,10 @@
 const {
   createProd,
   searchProducts,
-  getProductById
+  getProductById,
+  bloquear,
+  desbloquear,
+  editarProducto
 } = require("../controllers/productController");
 
 const createProduct = async (req, res) => {
@@ -52,4 +55,38 @@ const getProduct = async (req, res) => {
   }
 };
 
-module.exports = { createProduct, allProducts, getProduct };
+const deleteProduct=async (req,res)=>{
+try {
+  const {id}=req.params;
+  const productbloqued=await bloquear(id);
+  res.status(200).json(productbloqued)  
+} catch (error) {
+  res.status(400).json({error:error.message})
+}
+}
+const activeProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const productUnlocked = await desbloquear(id);
+    res.status(200).json({ message: productUnlocked });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const editProduct = async (req, res) => {
+  const { id } = req.params;
+  const { name, alcoholContent, image, stock, price } = req.body; // Obtén los valores a actualizar desde el cuerpo de la solicitud
+
+  try {
+    const result = await editarProducto(id, name, alcoholContent, image, stock, price);
+    if (result[0] === 1) {
+      res.status(200).json({ message: 'Producto editado con éxito' });
+    } else {
+      res.status(404).json({ error: 'Producto no encontrado' });
+    }
+  } catch (error) {
+    res.status(400).json({ error: 'Error al editar el producto' });
+  }
+};
+
+module.exports = { createProduct, allProducts, getProduct,deleteProduct,activeProduct,editProduct };
