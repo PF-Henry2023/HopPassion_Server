@@ -47,8 +47,16 @@ const createProd = async ({
 const searchProducts = async (query, country, order, category, page) => {
   const pageSize = 20;
   const offset = (page - 1) * pageSize;
+
+  //parche caso alfabetizacion("error": "column reference \"name\" is ambiguous") para Z_A || A_Z
+  let type;
+  if (order === "Z_A" || order === "A_Z") {
+    type = order;
+    order = undefined;
+  }
+
   try {
-    const result = await Product.findAndCountAll({
+    let result = await Product.findAndCountAll({
       attributes: ["id", "name", "price", "image", "stock", "alcoholContent"],
       where: filterConfiguration(query, country),
       order: orderingConfiguration(order),
@@ -56,6 +64,11 @@ const searchProducts = async (query, country, order, category, page) => {
       limit: pageSize,
       offset: offset,
     });
+
+    if (type && result.rows.length) {
+      result.rows = orderByName(type, result.rows);
+    }
+
     return {
       products: result.rows,
       page: { page, hasMore: offset + result.rows.length < result.count },
@@ -63,6 +76,18 @@ const searchProducts = async (query, country, order, category, page) => {
   } catch (error) {
     throw new Error(error.message);
   }
+};
+
+const orderByName = (type, result) => {
+  return result
+    .map((prod) => prod.dataValues)
+    .sort((a, b) => {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      return type === "Z_A"
+        ? nameB.localeCompare(nameA)
+        : nameA.localeCompare(nameB);
+    });
 };
 
 const getProductById = async (id) => {
@@ -103,10 +128,6 @@ const filterConfiguration = (query, country) => {
 
 const orderingConfiguration = (order) => {
   switch (order) {
-    case "A_Z":
-      return [[Sequelize.fn("lower", Sequelize.col("name")), "ASC"]];
-    case "Z_A":
-      return [[Sequelize.fn("lower", Sequelize.col("name")), "DESC"]];
     case "priceASC":
       return [["price", "ASC"]];
     case "priceDESC":
