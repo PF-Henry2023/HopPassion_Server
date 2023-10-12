@@ -16,7 +16,7 @@ const createReview = async (req, res) => {
 };
 const deleteReview = async (req, res) => {
   try {
-    const { idReview } = req.body;
+    const { idReview } = req.params;
     const response = await deleteRev(idReview);
     res.status(200).json(response);
   } catch (error) {
@@ -25,7 +25,8 @@ const deleteReview = async (req, res) => {
 };
 const updateReview = async (req, res) => {
   try {
-    const { idProd, ...changes } = req.body;
+    const { idProd } = req.params;
+    const { ...changes } = req.body;
     const response = await updateRev(idProd, changes);
     res.status(200).json(response);
   } catch (error) {
@@ -34,8 +35,8 @@ const updateReview = async (req, res) => {
 };
 const listReview = async (req, res) => {
   try {
-    const { idProd } = req.query;
-    const response = await listRev(idProd);
+    const { idUser, idProd } = req.query;
+    const response = await listRev(idUser, idProd);
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });
