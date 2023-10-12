@@ -1,18 +1,36 @@
-const { Review, Product } = require("../db");
+const { Review, Product, User } = require("../db");
 
 const createRev = async (review) => {
   try {
-    const { idProd, ...reviewData } = review;
-    const newReview = await Review.create(reviewData);
+    const { idProd, idUser, ...reviewData } = review;
 
-    if (idProd) {
-      const product = await Product.findByPk(idProd);
-      if (product) {
-        await newReview.setProduct(product);
-      } else {
-        throw new Error(`Producto con id ${idProd} no encontrado.`);
-      }
+    console.log(reviewData);
+    const product = await Product.findByPk(idProd);
+    if (!product) {
+      throw new Error(`Producto con id ${idProd} no encontrado.`);
     }
+
+    const user = await User.findByPk(idUser);
+    if (!user) {
+      throw new Error(`Usuario con id ${idUser} no encontrado.`);
+    }
+
+    /*
+    despues agregamos esto cuando termine el flujo
+    const existingReview = await Review.findOne({
+      where: { UserId: idUser, ProductId: idProd },
+    });
+
+    if (existingReview) {
+      throw new Error(
+        "El usuario ya ha realizado una revisión para este producto."
+      );
+    }
+    */
+
+    const newReview = await Review.create(reviewData);
+    await newReview.setProduct(product);
+    await newReview.setUser(user);
 
     return newReview;
   } catch (error) {
@@ -28,10 +46,6 @@ const deleteRev = async (idReview) => {
       },
     });
 
-    if (deletedReview === 0) {
-      throw new Error(`No se encontró ninguna revisión con ID ${idReview}.`);
-    }
-
     return deletedReview;
   } catch (error) {
     throw new Error(`Error deleting Review: ${error.message}`);
@@ -40,28 +54,61 @@ const deleteRev = async (idReview) => {
 
 const updateRev = async (idReview, changes) => {
   try {
+    const allowedFields = ["rating", "comment"];
+    const invalidFields = Object.keys(changes).filter(
+      (field) => !allowedFields.includes(field)
+    );
+
+    if (invalidFields.length > 0) {
+      throw new Error(
+        `Los siguientes campos no son válidos: ${invalidFields.join(", ")}`
+      );
+    }
+
     const [updatedCount, updatedReviews] = await Review.update(changes, {
       where: {
         id: idReview,
       },
-      returning: true, // Esto devuelve las filas actualizadas
+      returning: true,
     });
 
-    //updatedCount son las cant de cambios;
-
-    if (updatedCount === 0) {
+    if (updatedCount === 0 || updatedReviews.length === 0) {
       throw new Error(`No se encontró ninguna revisión con ID ${idReview}.`);
     }
 
-    return updatedReviews[0]; // Devuelve la revisión actualizada
+    return updatedReviews[0];
   } catch (error) {
     throw new Error(`Error updating Review: ${error.message}`);
   }
 };
 
-const listRev = async (idProd) => {
+const listRev = async (idUser, idProd) => {
   try {
-    const reviews = await Review.findAll();
+    let whereCondition = {};
+
+    if (idUser) {
+      whereCondition.UserId = idUser;
+    }
+
+    if (idProd) {
+      whereCondition.ProductId = idProd;
+    }
+
+    const reviews = await Review.findAll({
+      where: whereCondition,
+    });
+
+    if (!idUser && !idProd) {
+      return reviews;
+    }
+
+    if (idUser && idProd) {
+      const userReview = reviews.find((review) => review.UserId === idUser);
+      const otherReviews = reviews.filter((review) => review.UserId !== idUser);
+
+      return [userReview, ...otherReviews];
+    }
+
     return reviews;
   } catch (error) {
     throw new Error(`Error retrieving Review: ${error.message}`);
