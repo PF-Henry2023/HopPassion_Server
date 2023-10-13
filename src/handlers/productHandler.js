@@ -75,17 +75,17 @@ const activeProduct = async (req, res) => {
 };
 const editProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, alcoholContent, image, stock, price } = req.body; // Obtén los valores a actualizar desde el cuerpo de la solicitud
+  const { name, alcoholContent, image, stock, price, country } = req.body;
 
   try {
-    const result = await editarProducto(id, name, alcoholContent, image, stock, price);
-    if (result[0] === 1) {
-      res.status(200).json({ message: 'Producto editado con éxito' });
+    const result = await editarProducto(id, name, alcoholContent, image, stock, price, country);
+    if (result) {
+      res.status(200).json({ message: 'Producto editado con éxito', product: result });
     } else {
       res.status(404).json({ error: 'Producto no encontrado' });
     }
   } catch (error) {
-    res.status(400).json({ error: 'Error al editar el producto' });
+    res.status(500).json({ error: 'Error al editar el producto: ' + error.message });
   }
 };
 
