@@ -180,7 +180,7 @@ const desbloquear = async (id) => {
   }
 };
 
-const editarProducto = async (id, name, alcoholContent, image, stock, price) => {
+const editarProducto = async (id, name, alcoholContent, image, stock, price,country) => {
   
     const [rowsUpdated, [updatedProduct]] = await Product.update(
       {
@@ -189,13 +189,14 @@ const editarProducto = async (id, name, alcoholContent, image, stock, price) => 
         image,
         stock,
         price,
+        country,
       },
       { where: { id }, returning: true }
     );
 
     return rowsUpdated === 1 ? updatedProduct : null;
   
-};
+};  
 
 
 module.exports = {
