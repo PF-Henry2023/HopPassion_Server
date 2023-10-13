@@ -23,7 +23,6 @@ const createRev = async (review) => {
         "El usuario ya ha realizado una revisión para este producto."
       );
     }
-    
 
     const newReview = await Review.create(reviewData);
     await newReview.setProduct(product);
@@ -93,6 +92,12 @@ const listRev = async (idUser, idProd) => {
 
     const reviews = await Review.findAll({
       where: whereCondition,
+      include: [
+        {
+          model: User,
+          attributes: [["name", "user"], "email"],
+        },
+      ],
     });
 
     if (!idUser && !idProd) {
@@ -107,6 +112,12 @@ const listRev = async (idUser, idProd) => {
             [Sequelize.Op.ne]: idUser,
           },
         },
+        include: [
+          {
+            model: User,
+            attributes: [["name", "user"], "email"],
+          },
+        ],
       });
       return [...reviews, ...otherReviews];
     }
