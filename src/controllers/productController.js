@@ -1,4 +1,4 @@
-const { Product, Categorie } = require("../db");
+const { Product, Categorie, Review } = require("../db");
 const { Op, Sequelize } = require("sequelize");
 
 const createProd = async ({
@@ -57,7 +57,15 @@ const searchProducts = async (query, country, order, category, page) => {
 
   try {
     let result = await Product.findAndCountAll({
-      attributes: ["id", "name", "price", "image", "stock", "alcoholContent","isDeleted"],
+      attributes: [
+        "id",
+        "name",
+        "price",
+        "image",
+        "stock",
+        "alcoholContent",
+        "isDeleted",
+      ],
       where: filterConfiguration(query, country),
       order: orderingConfiguration(order),
       include: includeConfiguration(category),
@@ -159,7 +167,7 @@ const bloquear = async (id) => {
     { isDeleted: false }, // Corrige isDeleted en lugar de isDelete
     { where: { id } }
   );
-  
+
   if (productsd[0] === 1) {
     return "Producto bloqueado";
   } else {
@@ -180,24 +188,79 @@ const desbloquear = async (id) => {
   }
 };
 
-const editarProducto = async (id, name, alcoholContent, image, stock, price,country) => {
-  
-    const [rowsUpdated, [updatedProduct]] = await Product.update(
-      {
-        name,
-        alcoholContent,
-        image,
-        stock,
-        price,
-        country,
+const editarProducto = async (
+  id,
+  name,
+  alcoholContent,
+  image,
+  stock,
+  price,
+  country
+) => {
+  const [rowsUpdated, [updatedProduct]] = await Product.update(
+    {
+      name,
+      alcoholContent,
+      image,
+      stock,
+      price,
+      country,
+    },
+    { where: { id }, returning: true }
+  );
+
+  return rowsUpdated === 1 ? updatedProduct : null;
+};
+
+const qualifyProd = async (UserId) => {
+  try {
+    const productsWithoutReviews = await Product.findAll({
+      where: {
+        isDeleted: false,
       },
-      { where: { id }, returning: true }
+      include: [
+        {
+          model: Review,
+          where: {
+            UserId,
+          },
+          required: false,
+        },
+      ],
+    });
+
+    const productsWithNoReviews = productsWithoutReviews.filter(
+      (product) => !product.Reviews || product.Reviews.length === 0
     );
 
-    return rowsUpdated === 1 ? updatedProduct : null;
-  
-};  
+    return productsWithNoReviews;
+  } catch (error) {
+    throw new Error(`Error al obtener productos sin reseñas: ${error.message}`);
+  }
+};
 
+const qualifiedProd = async (UserId) => {
+  try {
+    const productsWithReviews = await Product.findAll({
+      where: {
+        isDeleted: false,
+      },
+      include: [
+        {
+          model: Review,
+          where: {
+            UserId,
+          },
+          required: true,
+        },
+      ],
+    });
+
+    return productsWithReviews;
+  } catch (error) {
+    throw new Error(`Error al obtener productos con reseñas: ${error.message}`);
+  }
+};
 
 module.exports = {
   createProd,
@@ -205,5 +268,7 @@ module.exports = {
   getProductById,
   bloquear,
   desbloquear,
-  editarProducto
+  editarProducto,
+  qualifyProd,
+  qualifiedProd,
 };
