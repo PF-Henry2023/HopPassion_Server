@@ -1,13 +1,19 @@
 const mp = require("../utils/mercadoPago");
-const { Order, OrderDetail } = require("../db");
+const { conn, Order, OrderDetail, Product } = require("../db");
 
 const processPayment = async (userId, info) => {
     try {
         const cart = await getCurrentCart(userId)
         const total = getTotalFromCart(cart)
 
+        // we check that the amount to pay is the same as the cart
         if (total != info.transaction_amount) {
-            throw new Error("Invalid amount");
+            throw new Error(`Invalid amount: total is ${info.transaction_amount} and cart is ${total}`);
+        }
+
+        // we check that all products have the necessary stock
+        if (!validateStockFromCart(cart)) {
+            throw new Error("Invalid quantities");
         }
 
         const preference = {
@@ -24,9 +30,30 @@ const processPayment = async (userId, info) => {
         const { response } = await mp.payment.save(preference)
 
         if (response.status == "approved" && response.status_detail == "accredited") {
+            const t = await conn.transaction();
+        
             cart.status = "send"
-            cart.total = 10
-            cart.save()
+            cart.total = parseInt(total, 10)
+
+            const operations = []
+            const updateStock = cart.OrderDetails.map((row) => {
+                if (row.quantity <= row.Product.stock) {
+                    row.Product.stock -= row.quantity
+                    return row.Product.save( { transaction: t} )
+                } else {
+                    throw new Error("Invalid quantities");
+                }
+            })
+
+            operations.push(...updateStock)
+
+            try {
+                await Promise.all(operations)
+                await cart.save( { transaction: t} )
+                await t.commit()
+            } catch(error) {
+                throw error
+            }
         }
 
         return { status: response.status, payment_id: response.id };
@@ -47,16 +74,30 @@ async function getCurrentCart(userId) {
           {
             model: OrderDetail,
             as: "OrderDetails",
-            attributes: ["quantity", "unitPrice"]
+            attributes: ["quantity", "unitPrice"],
+            include: [
+                {
+                  model: Product,
+                  attributes: ["stock", "id"],
+                },
+              ],
           },
         ],
     });
 }
 
 function getTotalFromCart(cart) {
-    return cart.OrderDetails.reduce((accumulator, row) => {
+    return parseFloat(cart.OrderDetails.reduce((accumulator, row) => {
         return accumulator + row.unitPrice * row.quantity;
-    }, 0)
+    }, 0).toFixed(2))
+}
+
+function validateStockFromCart(cart) {
+    const invalid = cart.OrderDetails.find((row) => {
+        return row.quantity > row.Product.stock
+    })
+
+    return invalid == null
 }
 
 module.exports = {
@@ -122,33 +163,4 @@ const mercadoPagoPayment = async (req, res) => {
     res.status(500).json({ message: "Error al procesar el pago" });
   }
 };
-*/
-
-/*
-installments
-: 
-1
-issuer_id
-: 
-"1"
-payer
-: 
-email
-: 
-"cintia_08@hotmail.com"
-identification
-: 
-{type: 'DNI', number: '12345678'}
-[[Prototype]]
-: 
-Object
-payment_method_id
-: 
-"visa"
-token
-: 
-"798c96fd49961dae0ad70f7219c7d938"
-transaction_amount
-: 
-10.48
 */
