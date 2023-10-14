@@ -84,7 +84,7 @@ const sendWelcomeEmail = async (userEmail) => {
 };
 
 const updateUserHandler = async (req, res) => {
-  const userId = req.params.id;
+  const userId = req.userId;
   const updateUserData = req.body;
   try {
     const response = await updateUser(userId, updateUserData);
@@ -119,7 +119,7 @@ const getAllUsersHandler = async (req, res) => {
 
 const getUserByIdHandler = async (req, res) => {
   //ver
-  const { id } = req.params;
+  const id = req.userId;
   try {
     const response = await getUserById(id);
     if (!response) res.status(404).json({ error: "User not found" });
@@ -162,5 +162,4 @@ module.exports = {
   getUserByIdHandler,
   signupOauth,
   loginOauth,
-
 };

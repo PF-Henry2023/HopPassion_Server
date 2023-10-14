@@ -18,9 +18,9 @@ const {
 
 usersRouter.post("/signup", checkDuplicateUserNameOrEmail, createUserHandler); // funcion para verificar los roles: checkRolesExisted  (NO USAR POR EL MOMENTO)
 usersRouter.post("/signin", signinHandler);
-usersRouter.put("/update/:id", updateUserHandler);
+usersRouter.put("/update/:id", verifyToken, updateUserHandler);
 usersRouter.get("/allUsers", verifyToken, isAdmin, getAllUsersHandler);
-usersRouter.get("/:id", getUserByIdHandler);
+usersRouter.get("/:id", verifyToken, getUserByIdHandler);
 
 // logueo con terceros(Google)
 usersRouter.post("/login/oauth2.0", loginOauth);
