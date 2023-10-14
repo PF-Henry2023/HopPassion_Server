@@ -1,8 +1,8 @@
 const { Router } = require("express");
-const { mercadoPagoPayment } = require("../handlers/mercadoPagoHandler");
-
+const { processPaymentHandler } = require("../handlers/mercadoPagoHandler");
+const { verifyToken } = require ("../utils/authJwt");
 const mercadoPagoRoute = Router();
 
-mercadoPagoRoute.post("/process_payment", mercadoPagoPayment)
+mercadoPagoRoute.post("/process_payment", verifyToken, processPaymentHandler)
 
 module.exports = mercadoPagoRoute
