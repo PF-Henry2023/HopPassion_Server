@@ -24,15 +24,17 @@ const getBuyId = async (userId) => {
 const createBuys = async (amount, payment_id, userId, productId) => {
   try {
     const user = await User.findByPk(userId);
-    const product = await Product.findByPk(productId);
-    if (user && product) {
+    if (user) {
       const newBuy = await Buy.create({
         amount,
         payment_id,
       });
       await user.addBuy(newBuy);
-      await product.addBuys(newBuy);
-      console.log("Compra creada y relacionada con usuario y producto");
+      for (const productid of productId) {
+        const product = await Product.findByPk(productid);
+        await product.addBuys(newBuy);
+      }
+      console.log("Compra creada y relacionada con usuario y productos");
     } else {
       throw new Error("Usuario o producto no encontrado");
     }
