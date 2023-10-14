@@ -1,3 +1,4 @@
+const { processPayment } = require("../controllers/mercadopagoController");
 const payment = require("../utils/mercadoPago");
 const nodemailer = require("nodemailer"); // Import Nodemailer
 require("dotenv").config();
@@ -28,6 +29,17 @@ const sendPaymentNotification = async (emailDestinatario, paymentAmount) => {
   }
 };
 
+const processPaymentHandler = async (req, res) => {
+  const userId = req.userId;
+  try {
+    const response = await processPayment(userId, req.body);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+/*
 const mercadoPagoPayment = async (req, res) => {
   try {
     const {
@@ -86,7 +98,8 @@ const mercadoPagoPayment = async (req, res) => {
     res.status(500).json({ message: "Error al procesar el pago" });
   }
 };
+*/
 
 module.exports = {
-  mercadoPagoPayment,
+  processPaymentHandler,
 };
