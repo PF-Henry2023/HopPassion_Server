@@ -13,6 +13,7 @@ const protectedRouter = require("./protectedRouter");
 const mercadoPagoRoute = require("./mercadoPagoRoute");
 const buysRouter = require("./buysRouter");
 const stadisticsRouter = require("./stadisticsRouter");
+const orderRouter = require("./orderRouter")
 
 router.use("/dataUpload", saveAllRoute);
 router.use("/review", reviewRouter);
@@ -26,5 +27,6 @@ router.use("/cart", cartRouter);
 router.use("/protected", protectedRouter);
 router.use("/buy", buysRouter);
 router.use("/stadistics", stadisticsRouter);
+router.use("/orders", orderRouter);
 
 module.exports = router;

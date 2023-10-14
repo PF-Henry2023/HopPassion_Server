@@ -93,6 +93,12 @@ const listRev = async (idUser, idProd) => {
 
     const reviews = await Review.findAll({
       where: whereCondition,
+      include: [
+        {
+          model: User,
+          attributes: [["name", "user"], "email"],
+        },
+      ],
     });
 
     if (!idUser && !idProd) {
@@ -107,6 +113,12 @@ const listRev = async (idUser, idProd) => {
             [Sequelize.Op.ne]: idUser,
           },
         },
+        include: [
+          {
+            model: User,
+            attributes: [["name", "user"], "email"],
+          },
+        ],
       });
       return [...reviews, ...otherReviews];
     }

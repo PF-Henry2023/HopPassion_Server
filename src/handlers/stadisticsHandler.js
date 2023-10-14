@@ -1,6 +1,7 @@
 const {
   totalUsersStadistics,
   monthlyIncome,
+  getTen,
   historicalTotalSales,
 } = require("../controllers/stadisticsController");
 
@@ -24,6 +25,15 @@ const getMonthlyIncomeForTheYear = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+const getTenProducts=async(req,res)=>{
+  try{
+    const filtrado=await getTen();
+    res.status(200).json(filtrado)
+
+  }catch(error){
+res.status(400).json({error:error.message})
+  }
+}
 
 const historicalTotal = async (req, res) => {
   try {
@@ -39,5 +49,6 @@ const historicalTotal = async (req, res) => {
 module.exports = {
   getTotalUsers,
   getMonthlyIncomeForTheYear,
+  getTenProducts,
   historicalTotal,
 };

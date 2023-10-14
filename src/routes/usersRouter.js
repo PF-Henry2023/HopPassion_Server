@@ -3,6 +3,8 @@ const usersRouter = Router();
 const {
   checkRolesExisted,
   checkDuplicateUserNameOrEmail,
+  isAdmin,
+  verifyToken
 } = require("../utils/authJwt");
 const {
   createUserHandler,
@@ -17,7 +19,7 @@ const {
 usersRouter.post("/signup", checkDuplicateUserNameOrEmail, createUserHandler); // funcion para verificar los roles: checkRolesExisted  (NO USAR POR EL MOMENTO)
 usersRouter.post("/signin", signinHandler);
 usersRouter.put("/update/:id", updateUserHandler);
-usersRouter.get("/allUsers", getAllUsersHandler);
+usersRouter.get("/allUsers", verifyToken, isAdmin, getAllUsersHandler);
 usersRouter.get("/:id", getUserByIdHandler);
 
 // logueo con terceros(Google)
