@@ -23,6 +23,7 @@ const sendPaymentNotification = async (
     subject: "Confirmacion de pago",
     text: `Gracias por confiar en nosotros. El monto total de tu compra fue de: ${transaction_amount} pesos`,
   };
+}
 
 const processPaymentHandler = async (req, res) => {
   const userId = req.userId;
