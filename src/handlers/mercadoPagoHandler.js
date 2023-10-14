@@ -12,12 +12,15 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendPaymentNotification = async (emailDestinatario, paymentAmount) => {
+const sendPaymentNotification = async (
+  emailDestinatario,
+  transaction_amount
+) => {
   const mailOptions = {
     from: emailUser,
     to: emailDestinatario,
     subject: "Confirmacion de pago",
-    text: `Gracias por confiar en nosotros. El monto total de tu compra fue de: ${paymentAmount} pesos`,
+    text: `Gracias por confiar en nosotros. El monto total de tu compra fue de: ${transaction_amount} pesos`,
   };
 
   try {
@@ -71,11 +74,7 @@ const mercadoPagoPayment = async (req, res) => {
         res.json({ status: response.status, payment_id: response.body.id });
 
         // Send the payment notification email after a successful payment
-        await sendPaymentNotification(
-          emailDestinatario,
-          description,
-          transaction_amount
-        );
+        await sendPaymentNotification(emailDestinatario, transaction_amount);
       })
       .catch(function (error) {
         console.error("Error al procesar el pago:", error);
