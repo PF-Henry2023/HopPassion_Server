@@ -21,6 +21,7 @@ const sendPaymentNotification = async (
     subject: "Confirmacion de pago",
     text: `Gracias por confiar en nosotros. El monto total de tu compra fue de: ${transaction_amount} pesos`,
   };
+}
 
   try {
     await transporter.sendMail(mailOptions);
