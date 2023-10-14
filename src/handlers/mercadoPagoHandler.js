@@ -1,10 +1,8 @@
-const { processPayment } = require("../controllers/mercadopagoController");
 const payment = require("../utils/mercadoPago");
 const nodemailer = require("nodemailer"); // Import Nodemailer
 require("dotenv").config();
 const emailUser = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS;
-
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
@@ -23,17 +21,13 @@ const sendPaymentNotification = async (
     subject: "Confirmacion de pago",
     text: `Gracias por confiar en nosotros. El monto total de tu compra fue de: ${transaction_amount} pesos`,
   };
-}
 
-const processPaymentHandler = async (req, res) => {
-  const userId = req.userId;
   try {
-    const response = await processPayment(userId, req.body);
-    res.status(200).json(response);
+    await transporter.sendMail(mailOptions);
+    console.log("Payment notification email sent to: " + emailDestinatario);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error sending payment notification email: " + error);
   }
-
 };
 
 const mercadoPagoPayment = async (req, res) => {
@@ -90,7 +84,6 @@ const mercadoPagoPayment = async (req, res) => {
     res.status(500).json({ message: "Error al procesar el pago" });
   }
 };
-
 module.exports = {
-  processPaymentHandler,
+  mercadoPagoPayment,
 };
