@@ -1,5 +1,5 @@
-const { Product, Categorie, Review } = require("../db");
-const { Op, Sequelize } = require("sequelize");
+const { Product, Categorie, Review, OrderDetail, User, Buy } = require("../db");
+const { Op, Sequelize, where } = require("sequelize");
 
 const createProd = async ({
   name,
@@ -214,26 +214,32 @@ const editarProducto = async (
 
 const qualifyProd = async (UserId) => {
   try {
-    const productsWithoutReviews = await Product.findAll({
-      where: {
-        isDeleted: false,
-      },
-      include: [
-        {
-          model: Review,
-          where: {
-            UserId,
-          },
-          required: false,
-        },
-      ],
+    const compras = await User.findByPk(UserId, {
+      include: [{ model: Buy }],
     });
 
-    const productsWithNoReviews = productsWithoutReviews.filter(
-      (product) => !product.Reviews || product.Reviews.length === 0
-    );
+    const idBuys = compras.Buys.map((compra) => compra.id);
 
-    return productsWithNoReviews;
+    const productPromises = idBuys.map(async (idBuy) => {
+      return await Product.findOne({
+        include: [
+          {
+            model: Buy,
+            where: { id: idBuy },
+            attributes: [],
+          },
+          {
+            model: Review,
+            required: false,
+            attributes: [],
+          },
+        ],
+      });
+    });
+
+    const prods = await Promise.all(productPromises);
+
+    return prods;
   } catch (error) {
     throw new Error(`Error al obtener productos sin reseñas: ${error.message}`);
   }
