@@ -54,8 +54,10 @@ const getTen= async()=>{
     const productosConConteoCompras = productosConComprasYCategorias.map((producto) => ({
       id: producto.id,
       name: producto.name, // Ajusta esto a la propiedad adecuada en tu modelo de Product
+      price:producto.price,
+      image: producto.image,
       totalAmount: producto.Buys.length, // Obtén la cantidad de compras
-      categories:producto.Categories
+      categories:producto.Categories,
     }));
     console.log(productosConComprasYCategorias);
 
@@ -64,10 +66,12 @@ const getTen= async()=>{
 
     // Obtiene los 10 productos principales
     const productosTop10 = productosConConteoCompras.slice(0, 10);
+    const productosTop3 = productosConConteoCompras.slice(0, 3);
     const top={
       labels:[],
       totalAmount:[],
-      categories:""
+      categories:"",
+      top3: productosTop3
     }
     for( const product of productosTop10 ){
       top.labels.push(product.name) 
