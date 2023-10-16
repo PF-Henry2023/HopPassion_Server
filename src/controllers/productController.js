@@ -195,7 +195,9 @@ const editarProducto = async (
   image,
   stock,
   price,
-  country
+  country,
+  description, 
+  amountMl
 ) => {
   const [rowsUpdated, [updatedProduct]] = await Product.update(
     {
@@ -205,6 +207,8 @@ const editarProducto = async (
       stock,
       price,
       country,
+      description, 
+      amountMl
     },
     { where: { id }, returning: true }
   );
