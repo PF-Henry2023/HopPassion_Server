@@ -23,7 +23,6 @@ const createRev = async (review) => {
         "El usuario ya ha realizado una revisión para este producto."
       );
     }
-    
 
     const newReview = await Review.create(reviewData);
     await newReview.setProduct(product);
@@ -51,7 +50,7 @@ const deleteRev = async (idReview) => {
 
 const updateRev = async (idReview, changes) => {
   try {
-    const allowedFields = ["rating", "comment"];
+    const allowedFields = ["rating", "comment", "isReviewed"];
     const invalidFields = Object.keys(changes).filter(
       (field) => !allowedFields.includes(field)
     );
@@ -99,6 +98,7 @@ const listRev = async (idUser, idProd) => {
           attributes: [["name", "user"], "email"],
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
 
     if (!idUser && !idProd) {
@@ -119,6 +119,7 @@ const listRev = async (idUser, idProd) => {
             attributes: [["name", "user"], "email"],
           },
         ],
+        order: [["createdAt", "DESC"]],
       });
       return [...reviews, ...otherReviews];
     }
@@ -128,9 +129,25 @@ const listRev = async (idUser, idProd) => {
     throw new Error(`Error retrieving Review: ${error.message}`);
   }
 };
+
+const listUnreviewedRevs = async () => {
+  try {
+    const UnreviewedRevs = await Review.findAll({
+      where: {
+        isReviewed: false,
+      },
+    });
+
+    return UnreviewedRevs;
+  } catch (error) {
+    throw new Error(`Error retrieving unreviewed reviews: ${error.message}`);
+  }
+};
+
 module.exports = {
   createRev,
   deleteRev,
   updateRev,
   listRev,
+  listUnreviewedRevs,
 };

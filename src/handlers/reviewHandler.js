@@ -3,6 +3,7 @@ const {
   deleteRev,
   updateRev,
   listRev,
+  listUnreviewedRevs,
 } = require("../controllers/reviewController.js");
 
 const createReview = async (req, res) => {
@@ -25,9 +26,9 @@ const deleteReview = async (req, res) => {
 };
 const updateReview = async (req, res) => {
   try {
-    const { idProd } = req.params;
+    const { idReview } = req.params;
     const { ...changes } = req.body;
-    const response = await updateRev(idProd, changes);
+    const response = await updateRev(idReview, changes);
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -43,4 +44,20 @@ const listReview = async (req, res) => {
   }
 };
 
-module.exports = { createReview, deleteReview, updateReview, listReview };
+const listUnreviewedReviews = async (req, res) => {
+  try {
+    const { idUser, idProd } = req.query;
+    const response = await listUnreviewedRevs(idUser, idProd);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  createReview,
+  deleteReview,
+  updateReview,
+  listReview,
+  listUnreviewedReviews,
+};
