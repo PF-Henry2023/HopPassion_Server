@@ -95,7 +95,7 @@ const listRev = async (idUser, idProd) => {
       include: [
         {
           model: User,
-          attributes: [["name", "user"], "email"],
+          attributes: [["name", "user"]],
         },
       ],
       order: [["createdAt", "DESC"]],
@@ -116,7 +116,7 @@ const listRev = async (idUser, idProd) => {
         include: [
           {
             model: User,
-            attributes: [["name", "user"], "email"],
+            attributes: [["name", "user"]],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -136,6 +136,12 @@ const listUnreviewedRevs = async () => {
       where: {
         isReviewed: false,
       },
+      include: [
+        {
+          model: User,
+          attributes: ["email"],
+        },
+      ],
     });
 
     return UnreviewedRevs;
