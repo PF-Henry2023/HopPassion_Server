@@ -64,8 +64,18 @@ const getTen= async()=>{
 
     // Obtiene los 10 productos principales
     const productosTop10 = productosConConteoCompras.slice(0, 10);
+    const top={
+      labels:[],
+      totalAmount:[],
+      categories:""
+    }
+    for( const product of productosTop10 ){
+      top.labels.push(product.name) 
+      top.totalAmount.push(product.totalAmount)
+      top.categories=product.categories[0].name
+    }
 
-    return productosTop10;
+    return top;
   } catch (error) {
     console.error(error);
     throw new Error(error);
