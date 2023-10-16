@@ -85,7 +85,7 @@ const activeProduct = async (req, res) => {
 };
 const editProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, alcoholContent, image, stock, price, country } = req.body;
+  const { name, alcoholContent, image, stock, price, country, description, amountMl} = req.body;
 
   try {
     const result = await editarProducto(
@@ -95,7 +95,9 @@ const editProduct = async (req, res) => {
       image,
       stock,
       price,
-      country
+      country, 
+      description,
+      amountMl
     );
     if (result) {
       res
