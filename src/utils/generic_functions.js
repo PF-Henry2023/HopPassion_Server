@@ -36,32 +36,37 @@ const monthlyIncomeForTheYear = (payload, type, actualYear) => {
   }
   switch (type) {
     case "amount":
-      const amountForYear = new Array(12).fill(0);
-      const amountForMonth = {};
-      let totalAmount = 0;
+      let amountForMonth =  new Array(12).fill(0);
       for (const buy of payload) {
-        const mes = buy.createdAt.getMonth() + 1;
+        const mes = buy.createdAt.getMonth();
         const year = buy.createdAt.getFullYear();
-        if(year === actualYear){
-          amountForMonth[mes] = totalAmount + Number(buy.amount); 
+        if (year === actualYear) {
+          amountForMonth[mes] += Number(buy.amount);
         }
       }
-      for (const buy of payload) {
-        const mes = buy.createdAt.getMonth() + 1;
-        const year = buy.createdAt.getFullYear();
-        if(year === actualYear){
-          amountForYear[mes - 1] = amountForMonth[mes];
-        }
-      }
-      return amountForYear;
-  
+      return amountForMonth;
     default:
       break;
   }
+}
+
+const historicalAmountSales = (buys, actualYear) => {
+  if(!buys){
+    throw new Error("No se paso ningun parametro")
+  } 
+  let total  = 0;
+  for (const buy of buys) {
+    const year = buy.createdAt.getFullYear();
+    if(year === actualYear){
+      total = total + Number(buy.amount);
+    } 
+  }
+  return total;
 }
 
 module.exports = {
   sumArr,
   userActiveDesactive,
   monthlyIncomeForTheYear,
+  historicalAmountSales,
 }
