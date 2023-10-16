@@ -4,7 +4,9 @@ const {
   getProductById,
   bloquear,
   desbloquear,
-  editarProducto
+  editarProducto,
+  qualifyProd,
+  qualifiedProd,
 } = require("../controllers/productController");
 
 const createProduct = async (req, res) => {
@@ -20,7 +22,8 @@ const createProduct = async (req, res) => {
       amountMl,
       alcoholContent,
     } = req.body;
-    const response = await createProd({name,
+    const response = await createProd({
+      name,
       image,
       description,
       country,
@@ -28,7 +31,8 @@ const createProduct = async (req, res) => {
       stock,
       category,
       amountMl,
-      alcoholContent,});
+      alcoholContent,
+    });
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -38,9 +42,15 @@ const createProduct = async (req, res) => {
 const allProducts = async (req, res) => {
   try {
     const { query, country, order, page, category } = req.query;
-    const response = await searchProducts(query, country, order, category, parseInt(page ?? 1, 10))
+    const response = await searchProducts(
+      query,
+      country,
+      order,
+      category,
+      parseInt(page ?? 1, 10)
+    );
     return res.status(200).json(response);
-  } catch(error) {
+  } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
@@ -48,22 +58,22 @@ const allProducts = async (req, res) => {
 const getProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await getProductById(id)
+    const product = await getProductById(id);
     res.status(200).json(product);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-const deleteProduct=async (req,res)=>{
-try {
-  const {id}=req.params;
-  const productbloqued=await bloquear(id);
-  res.status(200).json(productbloqued)  
-} catch (error) {
-  res.status(400).json({error:error.message})
-}
-}
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const productbloqued = await bloquear(id);
+    res.status(200).json(productbloqued);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 const activeProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -78,15 +88,56 @@ const editProduct = async (req, res) => {
   const { name, alcoholContent, image, stock, price, country } = req.body;
 
   try {
-    const result = await editarProducto(id, name, alcoholContent, image, stock, price, country);
+    const result = await editarProducto(
+      id,
+      name,
+      alcoholContent,
+      image,
+      stock,
+      price,
+      country
+    );
     if (result) {
-      res.status(200).json({ message: 'Producto editado con éxito', product: result });
+      res
+        .status(200)
+        .json({ message: "Producto editado con éxito", product: result });
     } else {
-      res.status(404).json({ error: 'Producto no encontrado' });
+      res.status(404).json({ error: "Producto no encontrado" });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Error al editar el producto: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Error al editar el producto: " + error.message });
   }
 };
 
-module.exports = { createProduct, allProducts, getProduct,deleteProduct,activeProduct,editProduct };
+const qualify = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await qualifyProd(id);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const qualified = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await qualifiedProd(id);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  createProduct,
+  allProducts,
+  getProduct,
+  deleteProduct,
+  activeProduct,
+  editProduct,
+  qualify,
+  qualified,
+};
