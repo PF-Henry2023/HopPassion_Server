@@ -214,32 +214,21 @@ const editarProducto = async (
 
 const qualifyProd = async (UserId) => {
   try {
-    const compras = await User.findByPk(UserId, {
-      include: [{ model: Buy }],
+    const productsWithoutReviews = await Product.findAll({
+      include: [
+        {
+          model: Buy,
+          where: { UserId },
+          attributes: [],
+        },
+        { model: Review, required: false },
+      ],
+      where: {
+        "$Reviews.id$": null,
+      },
     });
 
-    const idBuys = compras.Buys.map((compra) => compra.id);
-
-    const productPromises = idBuys.map(async (idBuy) => {
-      return await Product.findOne({
-        include: [
-          {
-            model: Buy,
-            where: { id: idBuy },
-            attributes: [],
-          },
-          {
-            model: Review,
-            required: false,
-            attributes: [],
-          },
-        ],
-      });
-    });
-
-    const prods = await Promise.all(productPromises);
-
-    return prods;
+    return productsWithoutReviews;
   } catch (error) {
     throw new Error(`Error al obtener productos sin reseñas: ${error.message}`);
   }
@@ -248,15 +237,15 @@ const qualifyProd = async (UserId) => {
 const qualifiedProd = async (UserId) => {
   try {
     const productsWithReviews = await Product.findAll({
-      where: {
-        isDeleted: false,
-      },
       include: [
         {
+          model: Buy,
+          where: { UserId },
+          attributes: [],
+        },
+        {
           model: Review,
-          where: {
-            UserId,
-          },
+          where: { UserId },
           required: true,
         },
       ],
