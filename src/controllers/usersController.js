@@ -83,6 +83,22 @@ const updateUser = async (id, dataUser) => {
   if (invalidFields.length > 0) throw Error("Invalid Fields");
 
   await User.update(dataUser, { where: { id } });
+  const user = await User.findByPk(id);
+  const token = jwt.sign(
+    {
+      id: user.id,
+      name: user.name,
+      lastName: user.lastName,
+      role: user.role,
+      email: user.email,
+      address : user.address,
+      postalCode: user.postalCode,
+      city: user.city,
+      country: user.country,
+    },
+    PASSWORD_JWT,
+    { expiresIn: 86400 }
+  );
 
   return {
     status: `User '${dataUser.name}' updated successfully`,
