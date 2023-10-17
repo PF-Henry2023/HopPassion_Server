@@ -7,6 +7,9 @@ const {
   newUserOauth,
   authenticationOauth,
   totalUsersStadistics,
+  deleteUser,
+  activateUser,
+  getUserByName
 } = require("../controllers/usersController");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -108,18 +111,22 @@ const signinHandler = async (req, res) => {
 };
 
 const getAllUsersHandler = async (req, res) => {
-  //ver
+  const { name } = req.query;
   try {
-    const response = await getAllUsers();
-    res.status(200).json(response);
+    if(name){
+      const userByName = await getUserByName(name);
+      res.status(200).json(userByName);
+    }else{
+      const response = await getAllUsers();
+      res.status(200).json(response);
+    }
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
 const getUserByIdHandler = async (req, res) => {
-  //ver
-  const id = req.userId;
+  const { id } = req.params;
   try {
     const response = await getUserById(id);
     if (!response) res.status(404).json({ error: "User not found" });
@@ -154,6 +161,26 @@ const loginOauth = async (req, res) => {
   }
 };
 
+const destroy = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await deleteUser(id);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const activate = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const status = await activateUser(id);
+    res.status(200).json(status);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createUserHandler,
   updateUserHandler,
@@ -162,4 +189,6 @@ module.exports = {
   getUserByIdHandler,
   signupOauth,
   loginOauth,
+  destroy,
+  activate,
 };

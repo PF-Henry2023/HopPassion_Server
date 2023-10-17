@@ -64,9 +64,17 @@ const historicalAmountSales = (buys, actualYear) => {
   return total;
 }
 
+//funcion para validar el nombre
+const normalizarCoincidencia = (name) => {
+  return name.normalize("NFD")//para normalizar los caracteres (convierte Á en A, é en e, etc...) NFD :: Normalization Form Canonical Decomposition
+          .replace(/[\u0300-\u036f]/g, "")//regExp
+          .toLowerCase();
+}
+
 module.exports = {
   sumArr,
   userActiveDesactive,
   monthlyIncomeForTheYear,
   historicalAmountSales,
+  normalizarCoincidencia,
 }
