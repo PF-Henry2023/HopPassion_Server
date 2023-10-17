@@ -10,7 +10,8 @@ const getAllOrders = async (userId) => {
             status: {
                 [Op.not]: "pending"
             },
-          }
+          },
+          order: [['createdAt', 'DESC']]
         });
         return mapOrdersToOrders(orders);
     } catch (error) {

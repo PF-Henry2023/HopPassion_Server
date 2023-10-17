@@ -49,8 +49,13 @@ const createUser = async ({
       id: user.id,
       name: user.name,
       lastName: user.lastName,
+      address: user.address,
+      email: user.email,
+      phone: user.phone,
       role: user.role,
-      email: user.email
+      postalCode: user.postalCode,
+      city: user.city,
+      country: user.country,
     },
     PASSWORD_JWT,
     { expiresIn: 86400 }
@@ -117,7 +122,7 @@ const signIn = async (email, password) => {
       name: userFound.name,
       lastName: userFound.lastName,
       role: userFound.role,
-      email: userFound.email
+      email: userFound.email,
     },
     PASSWORD_JWT,
     { expiresIn: 86400 }
