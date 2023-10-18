@@ -76,9 +76,15 @@ const searchProducts = async (query, country, order, category, page) => {
     if (type && result.rows.length) {
       result.rows = orderByName(type, result.rows);
     }
-
+    //const filteredRows = result.rows[0].filter(e => e.dataValues.isDeleted !== true);
+    const filtered = [];
+    for (const product of result.rows) {
+      if(product.dataValues.isDeleted === true){
+        filtered.push(product);
+      }
+    }
     return {
-      products: result.rows,
+      products: filtered,
       page: { page, hasMore: offset + result.rows.length < result.count },
     };
   } catch (error) {
