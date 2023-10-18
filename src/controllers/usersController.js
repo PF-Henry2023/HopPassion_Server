@@ -259,6 +259,25 @@ const getUserByName = async (name) => {
   return usersFiltered;
 }
 
+const contraseñaNueva = async (id, password) => {
+  try {
+    const [passwordUpdated, [updatedUser]] = await User.update(
+      { password },
+      { where: { id }, returning: true }
+    );
+
+    if (passwordUpdated === 0) {
+      // Si no se actualizó ninguna fila, significa que el usuario no fue encontrado
+      throw new Error('Usuario no encontrado');
+    }
+
+    return updatedUser;
+  } catch (error) {
+    throw new Error('Error al actualizar la contraseña: ' + error.message);
+  }
+};
+
+
 module.exports = {
   createUser,
   updateUser,
@@ -270,4 +289,5 @@ module.exports = {
   deleteUser,
   activateUser,
   getUserByName,
+  contraseñaNueva
 };

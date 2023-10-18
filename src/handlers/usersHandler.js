@@ -9,7 +9,8 @@ const {
   totalUsersStadistics,
   deleteUser,
   activateUser,
-  getUserByName
+  getUserByName,
+  contraseñaNueva
 } = require("../controllers/usersController");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -180,6 +181,16 @@ const activate = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const newPassword=async(req,res)=>{
+  try {
+    const {id}=req.params
+    const {password}=req.body
+    const cambioPassword=await contraseñaNueva(id,password)
+    res.status(200).json(cambioPassword);
+  } catch (error) {
+    res.status(400).json({error:error.message})
+  }
+}
 
 module.exports = {
   createUserHandler,
@@ -191,4 +202,5 @@ module.exports = {
   loginOauth,
   destroy,
   activate,
+  newPassword
 };
