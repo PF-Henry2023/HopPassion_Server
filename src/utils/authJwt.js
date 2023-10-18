@@ -9,33 +9,45 @@ const { PASSWORD_JWT } = process.env;
 //para verificar en las rutas si el token existe; se puede pasar como funcion a cualquier ruta donde se desee
 const verifyToken = async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"]; // recibimos el token por header
-    if (!token) return res.status(403).json({ message: "No token provided" }); // comprobamos is el token no existe
+    const token = req.headers["x-access-token"];
 
-    const decoded = jwt.verify(token, PASSWORD_JWT); // si existe token extraemos lo que esta dentro del token y guardamos en un objeto decoded
-    console.log(decoded); // me trae esto: { id: 12, iat: 1696362113, exp: 1696448513 }
-    req.userId = decoded.id;
+    if (!token) {
+      return res.status(401).json({ message: "Invalid token" });
+    } 
+
+    const decoded = jwt.verify(token, PASSWORD_JWT);
     const user = await User.findOne(
-      { where: { id: req.userId } },
-      { password: 0 }
-    ); // buscamos al usuario con la propiedad decoded.id que es el id referenciado al usuario que se paso por header
-    if (!user) return res.status(404).json({ message: "no user found" });
+      { where: { id: decoded.id } }
+    );
 
+    if (!user) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    req.userId = decoded.id;
     next();
+    return
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
 
 const isAdmin = async (req, res, next) => {
-  const user = await User.findOne({ where: { id: req.userId } });
-  console.log(user);
-  const roleUser = user.role;
-  if (roleUser === "admin") {
-    next(); // si el rol del usuario es igual a admin continua con la siguiente funcion
-    return; // si coincide con el admin retorna
+  if (!req.userId) {
+    throw new Error("Not authenticated")
   }
-  return res.status(403).json({ message: "Require Admin role" });
+
+  const user = await User.findOne({ where: { id: req.userId } });
+  if (user.role === "admin") {
+    next()
+    return
+  }
+
+  return res.status(403).json({ message: "Forbidden" });
 };
 
 // verifica si el rol que fue enviado ya fue creado

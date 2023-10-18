@@ -11,7 +11,6 @@ protectedRouter.get("/", async (req,res) => {
             }
         });
         const userinfo = response.data
-        console.log(userinfo);
         res.send(userinfo);
     } catch (error) {
         res.send(error.message)

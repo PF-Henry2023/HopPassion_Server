@@ -59,7 +59,6 @@ const getTen= async()=>{
       totalAmount: producto.Buys.length, // Obtén la cantidad de compras
       categories:producto.Categories,
     }));
-    console.log(productosConComprasYCategorias);
 
     // Ordena los productos por la cantidad de compras en orden descendente
     productosConConteoCompras.sort((a, b) => b.totalAmount - a.totalAmount);
