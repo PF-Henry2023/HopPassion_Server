@@ -40,7 +40,8 @@ const historicalTotal = async (req, res) => {
     const actualDate = new Date();
     const actualYear = actualDate.getFullYear();
     const total = await historicalTotalSales(actualYear);
-    res.status(200).json({ data: total });
+    const totalNotDecimal = Math.round(total);
+    res.status(200).json({ data: totalNotDecimal });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

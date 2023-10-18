@@ -88,9 +88,26 @@ const updateUser = async (id, dataUser) => {
   if (invalidFields.length > 0) throw Error("Invalid Fields");
 
   await User.update(dataUser, { where: { id } });
+  const user = await User.findByPk(id);
+  const token = jwt.sign(
+    {
+      id: user.id,
+      name: user.name,
+      lastName: user.lastName,
+      role: user.role,
+      email: user.email,
+      address: user.address,
+      postalCode: user.postalCode,
+      city: user.city,
+      country: user.country,
+    },
+    PASSWORD_JWT,
+    { expiresIn: 86400 }
+  );
 
   return {
-    status: `User '${dataUser.name}' updated successfully`,
+    data: user,
+    token: token,
   };
 };
 
@@ -105,8 +122,14 @@ const signIn = async (email, password) => {
       id: userFound.id,
       name: userFound.name,
       lastName: userFound.lastName,
-      role: userFound.role,
+      address: userFound.address,
       email: userFound.email,
+      phone: userFound.phone,
+      role: userFound.role,
+      password: userFound.password,
+      postalCode: userFound.postalCode,
+      city: userFound.city,
+      country: userFound.country,
     },
     PASSWORD_JWT,
     { expiresIn: 86400 }
