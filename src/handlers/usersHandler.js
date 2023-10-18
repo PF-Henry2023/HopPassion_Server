@@ -119,7 +119,7 @@ const getAllUsersHandler = async (req, res) => {
 
 const getUserByIdHandler = async (req, res) => {
   //ver
-  const id = req.userId;
+  const {id} = req.params;
   try {
     const response = await getUserById(id);
     if (!response) res.status(404).json({ error: "User not found" });

@@ -96,7 +96,7 @@ const updateUser = async (id, dataUser) => {
       lastName: user.lastName,
       role: user.role,
       email: user.email,
-      address : user.address,
+      address: user.address,
       postalCode: user.postalCode,
       city: user.city,
       country: user.country,
@@ -106,7 +106,8 @@ const updateUser = async (id, dataUser) => {
   );
 
   return {
-    status: `User '${dataUser.name}' updated successfully`,
+    data: user,
+    token: token,
   };
 };
 
@@ -121,8 +122,14 @@ const signIn = async (email, password) => {
       id: userFound.id,
       name: userFound.name,
       lastName: userFound.lastName,
-      role: userFound.role,
+      address: userFound.address,
       email: userFound.email,
+      phone: userFound.phone,
+      role: userFound.role,
+      password: userFound.password,
+      postalCode: userFound.postalCode,
+      city: userFound.city,
+      country: userFound.country,
     },
     PASSWORD_JWT,
     { expiresIn: 86400 }
