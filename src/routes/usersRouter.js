@@ -16,6 +16,7 @@ const {
   signupOauth,
   destroy,
   activate,
+  newPassword
 } = require("../handlers/usersHandler");
 
 usersRouter.post("/signup", checkDuplicateUserNameOrEmail, createUserHandler); // funcion para verificar los roles: checkRolesExisted  (NO USAR POR EL MOMENTO)
@@ -31,5 +32,8 @@ usersRouter.put("/activate/:id", activate);
 // logueo con terceros(Google)
 usersRouter.post("/login/oauth2.0", loginOauth);
 usersRouter.post("/signup/oauth2.0", signupOauth);
+
+//password
+usersRouter.put("/password/:id", newPassword);
 
 module.exports = usersRouter;
