@@ -212,7 +212,19 @@ const authenticationOauth = async (data) => {
   if (user.isActive === false) throw new Error("This user is banned");
 
   const token = jwt.sign(
-    { id: user.id, role: user.role, name: user.name },
+    {
+      id: user.id,
+      name: user.name,
+      lastName: user.lastName,
+      address: user.address,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      password: user.password,
+      postalCode: user.postalCode,
+      city: user.city,
+      country: user.country,
+    },
     PASSWORD_JWT,
     { audience: "" }
   );
@@ -254,10 +266,13 @@ const activateUser = async (id) => {
 //obtiene los usuarios que coincidan con el nombre ingresado
 const getUserByName = async (name) => {
   const infoServer = await getAllUsers();
-  const usersFiltered = infoServer.filter((user) => normalizarCoincidencia(user.name).includes(normalizarCoincidencia(name)));
-  if(usersFiltered.length < 1) throw Error (`No existe el usuario con el nombre: ${name}`);
+  const usersFiltered = infoServer.filter((user) =>
+    normalizarCoincidencia(user.name).includes(normalizarCoincidencia(name))
+  );
+  if (usersFiltered.length < 1)
+    throw Error(`No existe el usuario con el nombre: ${name}`);
   return usersFiltered;
-}
+};
 
 const contraseñaNueva = async (id, password) => {
   try {
