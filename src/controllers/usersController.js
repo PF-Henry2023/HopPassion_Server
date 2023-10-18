@@ -1,7 +1,7 @@
 const { User } = require("../db");
 const jwt = require("jsonwebtoken");
 const { decodeTokenOauth } = require("../utils/google");
-const { userActiveDesactive } = require("../utils/generic_functions");
+const { normalizarCoincidencia } = require("../utils/generic_functions");
 require("dotenv").config();
 const { PASSWORD_JWT } = process.env;
 const nodemailer = require("nodemailer");
@@ -219,6 +219,46 @@ const authenticationOauth = async (data) => {
   return token;
 };
 
+// delete user
+const deleteUser = async (id) => {
+  try {
+    const user = await User.findOne({ where: { id, isActive: true } });
+    if (!user) {
+      return {
+        status: "User not found",
+      };
+    }
+    await User.update({ isActive: false }, { where: { id } });
+    return user; // Devuelve el usuario eliminado
+  } catch (error) {
+    throw new Error(`Error deleting user: ${error.message}`);
+  }
+};
+
+//activate user
+const activateUser = async (id) => {
+  try {
+    if (!id) {
+      throw new Error(`No ID provided for restoration!`);
+    }
+    await User.update({ isActive: true }, { where: { id } });
+
+    const restoredNutritionist = await User.findByPk(id);
+
+    return restoredNutritionist;
+  } catch (error) {
+    throw new Error(`Error updating nutritionist: ${error.message}`);
+  }
+};
+
+//obtiene los usuarios que coincidan con el nombre ingresado
+const getUserByName = async (name) => {
+  const infoServer = await getAllUsers();
+  const usersFiltered = infoServer.filter((user) => normalizarCoincidencia(user.name).includes(normalizarCoincidencia(name)));
+  if(usersFiltered.length < 1) throw Error (`No existe el usuario con el nombre: ${name}`);
+  return usersFiltered;
+}
+
 module.exports = {
   createUser,
   updateUser,
@@ -227,4 +267,7 @@ module.exports = {
   getUserById,
   newUserOauth,
   authenticationOauth,
+  deleteUser,
+  activateUser,
+  getUserByName,
 };
