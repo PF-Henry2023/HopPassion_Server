@@ -4,7 +4,7 @@ const {
   checkRolesExisted,
   checkDuplicateUserNameOrEmail,
   isAdmin,
-  verifyToken
+  verifyToken,
 } = require("../utils/authJwt");
 const {
   createUserHandler,
@@ -16,14 +16,19 @@ const {
   signupOauth,
   destroy,
   activate,
-  newPassword
+  newPassword,
+  emailsOfAllUsers,
 } = require("../handlers/usersHandler");
+
+
 
 usersRouter.post("/signup", checkDuplicateUserNameOrEmail, createUserHandler); // funcion para verificar los roles: checkRolesExisted  (NO USAR POR EL MOMENTO)
 usersRouter.post("/signin", signinHandler);
+usersRouter.get("/emails", emailsOfAllUsers);
 usersRouter.put("/update/:id", verifyToken, updateUserHandler);
 usersRouter.get("/allUsers", verifyToken, isAdmin, getAllUsersHandler);
 usersRouter.get("/:id", verifyToken, getUserByIdHandler);
+
 
 //Rutas para el borrado lógico:
 usersRouter.delete("/delete/:id", destroy);

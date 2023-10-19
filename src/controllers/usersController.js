@@ -63,6 +63,12 @@ const createUser = async ({
   return token;
 };
 
+const getEmailsOfAllUsers = async () => {
+  const users = await User.findAll();
+  const emails = users.map((user) => user.email);
+  return emails;
+};
+
 const getUserById = async (id) => {
   const userById = await User.findOne({ where: { id } });
   if (!userById) throw Error("User not found");
@@ -112,30 +118,24 @@ const updateUser = async (id, dataUser) => {
 };
 
 const signIn = async (email, password) => {
-  const user = await User.findOne({ where: { email: email } });
-  if (!user) {
-    throw Error("User not found");
-  }
-  if (!user.isActive) {
-    throw Error("User is blocked");
-  }
-  const matchPassword = await user.comparePassword(password);
-  if (!matchPassword) {
-    throw Error("Invalid password");
-  } 
+  const userFound = await User.findOne({ where: { email: email } });
+  if (!userFound) throw Error("User not found");
+  const matchPassword = await userFound.comparePassword(password);
+  if (!matchPassword) throw Error("Invalid password");
+  console.log(userFound);
   const token = jwt.sign(
     {
-      id: user.id,
-      name: user.name,
-      lastName: user.lastName,
-      address: user.address,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      password: user.password,
-      postalCode: user.postalCode,
-      city: user.city,
-      country: user.country,
+      id: userFound.id,
+      name: userFound.name,
+      lastName: userFound.lastName,
+      address: userFound.address,
+      email: userFound.email,
+      phone: userFound.phone,
+      role: userFound.role,
+      password: userFound.password,
+      postalCode: userFound.postalCode,
+      city: userFound.city,
+      country: userFound.country,
     },
     PASSWORD_JWT,
     { expiresIn: 86400 }
@@ -169,6 +169,7 @@ const newUserOauth = async (data) => {
     if (!created) {
       throw new Error("User Already exist");
     }
+    console.log("el usuario se creo con exito");
     await sendWelcomeEmail(email);
     const token = jwt.sign(
       { id, role, name: given_name, lastName: family_name },
@@ -213,14 +214,8 @@ const sendWelcomeEmail = async (userEmail) => {
 const authenticationOauth = async (data) => {
   const { email } = await decodeTokenOauth(data);
   const user = await User.findOne({ where: { email } });
-
-  if (!user) {
-    throw new Error("¡A gmail account is not regiter for this user!");
-  }
-
-  if (!user.isActive) {
-    throw Error("User is blocked");
-  }
+  if (!user) throw new Error("¡A gmail account is not regiter for this user!");
+  if (user.isActive === false) throw new Error("This user is banned");
 
   const token = jwt.sign(
     {
@@ -239,19 +234,20 @@ const authenticationOauth = async (data) => {
     PASSWORD_JWT,
     { audience: "" }
   );
-
   return token;
 };
 
 // delete user
 const deleteUser = async (id) => {
   try {
-    const user = await User.findOne({ where: { id: id } });
+    const user = await User.findOne({ where: { id, isActive: true } });
     if (!user) {
-      throw Error("User not found");
+      return {
+        status: "User not found",
+      };
     }
-    await User.update({ isActive: false }, { where: { id: id } });
-    return user;
+    await User.update({ isActive: false }, { where: { id } });
+    return user; // Devuelve el usuario eliminado
   } catch (error) {
     throw new Error(`Error deleting user: ${error.message}`);
   }
@@ -264,9 +260,12 @@ const activateUser = async (id) => {
       throw new Error(`No ID provided for restoration!`);
     }
     await User.update({ isActive: true }, { where: { id } });
-    return await User.findByPk(id);
+
+    const restoredNutritionist = await User.findByPk(id);
+
+    return restoredNutritionist;
   } catch (error) {
-    throw new Error(`Error updating user: ${error.message}`);
+    throw new Error(`Error updating nutritionist: ${error.message}`);
   }
 };
 
@@ -290,15 +289,14 @@ const contraseñaNueva = async (id, password) => {
 
     if (passwordUpdated === 0) {
       // Si no se actualizó ninguna fila, significa que el usuario no fue encontrado
-      throw new Error('Usuario no encontrado');
+      throw new Error("Usuario no encontrado");
     }
 
     return updatedUser;
   } catch (error) {
-    throw new Error('Error al actualizar la contraseña: ' + error.message);
+    throw new Error("Error al actualizar la contraseña: " + error.message);
   }
 };
-
 
 module.exports = {
   createUser,
@@ -311,5 +309,6 @@ module.exports = {
   deleteUser,
   activateUser,
   getUserByName,
-  contraseñaNueva
+  contraseñaNueva,
+  getEmailsOfAllUsers,
 };
