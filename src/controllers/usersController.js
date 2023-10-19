@@ -2,6 +2,7 @@ const { User } = require("../db");
 const jwt = require("jsonwebtoken");
 const { decodeTokenOauth } = require("../utils/google");
 const { normalizarCoincidencia } = require("../utils/generic_functions");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 const { PASSWORD_JWT } = process.env;
 const nodemailer = require("nodemailer");
@@ -281,24 +282,29 @@ const getUserByName = async (name) => {
   return usersFiltered;
 };
 
-const contraseñaNueva = async (id, password) => {
+const contraseñaNueva = async (userId, newPassword) => {
   try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error("Usuario no encontrado");
+    }
+    const saltRounds = 10;
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
     const [passwordUpdated, [updatedUser]] = await User.update(
-      { password },
-      { where: { id }, returning: true }
+      { password: hashedNewPassword },
+      { where: { id: userId }, returning: true }
     );
 
     if (passwordUpdated === 0) {
-      // Si no se actualizó ninguna fila, significa que el usuario no fue encontrado
-      throw new Error('Usuario no encontrado');
+      throw new Error("Error al actualizar la contraseña");
     }
 
-    return updatedUser;
+    return "Contraseña actualizada con éxito";
   } catch (error) {
-    throw new Error('Error al actualizar la contraseña: ' + error.message);
+    throw new Error("Error al actualizar la contraseña: " + error.message);
   }
 };
-
 
 module.exports = {
   createUser,
@@ -311,5 +317,5 @@ module.exports = {
   deleteUser,
   activateUser,
   getUserByName,
-  contraseñaNueva
+  contraseñaNueva,
 };
