@@ -34,7 +34,6 @@ const createBuys = async (amount, payment_id, userId, productId) => {
         const product = await Product.findByPk(productid);
         await product.addBuys(newBuy);
       }
-      console.log("Compra creada y relacionada con usuario y productos");
     } else {
       throw new Error("Usuario o producto no encontrado");
     }

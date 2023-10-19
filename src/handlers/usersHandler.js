@@ -139,11 +139,9 @@ const getUserByIdHandler = async (req, res) => {
 
 //AUTENTICACION CON TERCEROS:
 const signupOauth = async (req, res) => {
-  console.log("entro a la funcion");
   const { tokenId } = req.body; //encoded token
   try {
     const response = await newUserOauth(tokenId);
-    console.log(response);
     return res.status(200).json({ message: response });
   } catch (error) {
     console.log(error);
