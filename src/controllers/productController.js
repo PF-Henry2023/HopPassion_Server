@@ -45,7 +45,6 @@ const createProd = async ({
 };
 
 const searchProducts = async (query, country, order, category, page) => {
-  const pageSize = 20;
   const offset = (page - 1) * pageSize;
 
   //parche caso alfabetizacion("error": "column reference \"name\" is ambiguous") para Z_A || A_Z
@@ -77,14 +76,9 @@ const searchProducts = async (query, country, order, category, page) => {
       result.rows = orderByName(type, result.rows);
     }
     //const filteredRows = result.rows[0].filter(e => e.dataValues.isDeleted !== true);
-    const filtered = [];
-    for (const product of result.rows) {
-      if(product.dataValues.isDeleted === true){
-        filtered.push(product);
-      }
-    }
     return {
-      products: filtered,
+      products: result.rows,
+      productsTable: result.rows,
       page: { page, hasMore: offset + result.rows.length < result.count },
     };
   } catch (error) {
@@ -202,7 +196,7 @@ const editarProducto = async (
   stock,
   price,
   country,
-  description, 
+  description,
   amountMl
 ) => {
   const [rowsUpdated, [updatedProduct]] = await Product.update(
@@ -213,8 +207,8 @@ const editarProducto = async (
       stock,
       price,
       country,
-      description, 
-      amountMl
+      description,
+      amountMl,
     },
     { where: { id }, returning: true }
   );
@@ -222,23 +216,41 @@ const editarProducto = async (
   return rowsUpdated === 1 ? updatedProduct : null;
 };
 
-const qualifyProd = async (UserId) => {
+const qualifyProd = async (UserId, page) => {
   try {
-    const productsWithoutReviews = await Product.findAll({
-      include: [
-        {
-          model: Buy,
-          where: { UserId },
-          attributes: [],
+    if (!page) {
+      const productsWithoutReviews = await Product.findAll({
+        include: [
+          {
+            model: Buy,
+            where: { UserId },
+            attributes: [],
+          },
+          { model: Review, required: false },
+        ],
+        where: {
+          "$Reviews.id$": null,
         },
-        { model: Review, required: false },
-      ],
-      where: {
-        "$Reviews.id$": null,
-      },
-    });
+      });
+      return productsWithoutReviews;
+    }
+    const pageSize = 5;
+    const offset = (page - 1) * pageSize;
+    try {
+      console.log("entre a la funcion");
+      let result = await Product.findAndCountAll({
+        limit: pageSize,
+        offset: offset,
+      });
+      console.log(result);
 
-    return productsWithoutReviews;
+      return {
+        products: result.rows,
+        page: { page, hasMore: offset + result.rows.length < result.count },
+      };
+    } catch (error) {
+      throw new Error(error.message);
+    }
   } catch (error) {
     throw new Error(`Error al obtener productos sin reseñas: ${error.message}`);
   }
