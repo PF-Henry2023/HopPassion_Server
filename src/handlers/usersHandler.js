@@ -11,7 +11,6 @@ const {
   activateUser,
   getUserByName,
   contraseñaNueva,
-  getEmailsOfAllUsers,
 } = require("../controllers/usersController");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -191,15 +190,6 @@ const newPassword = async (req, res) => {
   }
 };
 
-const emailsOfAllUsers= async (req, res) => {
-  try {
-    const emails = await getEmailsOfAllUsers();
-    res.status(200).json(emails);
-  } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
 module.exports = {
   createUserHandler,
   updateUserHandler,
@@ -211,5 +201,4 @@ module.exports = {
   destroy,
   activate,
   newPassword,
-  emailsOfAllUsers,
 };

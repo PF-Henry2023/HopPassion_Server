@@ -16,6 +16,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const checkEmailExists = async (email) => {
+  const existingUser = await User.findOne({ where: { email: email } });
+  return !!existingUser;
+};
+
 const createUser = async ({
   name,
   lastName,
@@ -28,22 +33,25 @@ const createUser = async ({
   city,
   country,
 }) => {
-  const [user, created] = await User.findOrCreate({
-    where: { email },
-    defaults: {
-      name,
-      lastName,
-      address,
-      email,
-      phone,
-      role,
-      password,
-      postalCode,
-      city,
-      country,
-    },
+  const emailExists = await checkEmailExists(email);
+
+  if (emailExists) {
+    throw new Error("Email already exists");
+  }
+
+  const user = await User.create({
+    name,
+    lastName,
+    address,
+    email,
+    phone,
+    role,
+    password,
+    postalCode,
+    city,
+    country,
   });
-  if (!created) throw Error("User already exists");
+
   const token = jwt.sign(
     {
       id: user.id,
@@ -61,12 +69,6 @@ const createUser = async ({
     { expiresIn: 86400 }
   );
   return token;
-};
-
-const getEmailsOfAllUsers = async () => {
-  const users = await User.findAll();
-  const emails = users.map((user) => user.email);
-  return emails;
 };
 
 const getUserById = async (id) => {
@@ -310,5 +312,4 @@ module.exports = {
   activateUser,
   getUserByName,
   contraseñaNueva,
-  getEmailsOfAllUsers,
 };
