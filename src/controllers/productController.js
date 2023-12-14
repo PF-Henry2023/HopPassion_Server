@@ -56,6 +56,8 @@ const searchProducts = async (query, country, order, category, page) => {
   }
 
   try {
+    console.log('Searching Products with Parameters:', { query, country, order, category, page });
+    
     let result = await Product.findAndCountAll({
       attributes: [
         "id",
