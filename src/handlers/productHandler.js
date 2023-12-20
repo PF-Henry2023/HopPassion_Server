@@ -42,6 +42,8 @@ const createProduct = async (req, res) => {
 const allProducts = async (req, res) => {
   try {
     const { query, country, order, page, category } = req.query;
+    console.log('Query Parameters:', { query, country, order, page, category });
+   
     const response = await searchProducts(
       query,
       country,

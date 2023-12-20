@@ -2,17 +2,30 @@ require("dotenv").config();
 const { Sequelize } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
-const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME, DB_DEPLOY } = process.env;
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
 
-// const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`, {
+const sequelize = new Sequelize(
+  `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`,
+  {
+    logging: false, // set to console.log to see the raw SQL queries
+    native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+  }
+);
+
+// Prueba de conexión a la base de datos
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connection to the database has been established successfully.");
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });
+
+// const sequelize = new Sequelize(DB_DEPLOY, {
 //   logging: false, // set to console.log to see the raw SQL queries
 //   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
 // });
-
-const sequelize = new Sequelize(DB_DEPLOY, {
-  logging: false, // set to console.log to see the raw SQL queries
-  native: false, // lets Sequelize know we can use pg-native for ~30% more speed
-});
 
 const basename = path.basename(__filename);
 
@@ -72,11 +85,11 @@ Review.belongsTo(User);
 Product.hasMany(OrderDetail, { foreignKey: "product_id", as: "OrderDetails" });
 OrderDetail.belongsTo(Product, { foreignKey: "product_id" });
 
-User.hasMany(Buy, {foreignKey: 'UserId'}); 
-Buy.belongsTo(User); 
+User.hasMany(Buy, { foreignKey: "UserId" });
+Buy.belongsTo(User);
 
-Product.belongsToMany(Buy, { through: 'ProductBuy' }); 
-Buy.belongsToMany(Product, { through: 'ProductBuy' }); 
+Product.belongsToMany(Buy, { through: "ProductBuy" });
+Buy.belongsToMany(Product, { through: "ProductBuy" });
 
 module.exports = {
   ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
